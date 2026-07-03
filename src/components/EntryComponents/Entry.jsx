@@ -6,8 +6,18 @@ import Transactions from './Transactions'
 function Entry() {
     return (
         <Content>
+            <div className='entry-title'>
+                <div className='entry-title-text'>
+                <h1 className='display-6' style={{color:'#776b6b'}}>Entry</h1>
+                </div>
+                <div style={{backgroundColor:'#f7f7f7', width:'50%', marginRight:'20%'}}> 
+                    <h1 className='display-6' style={{color:'#776b6b'}}>Transactions</h1>
+                </div>
+            </div>
+            <div style={{display:'flex', gap:'2%'}}>
             <EntryForm/>
             <Transactions/>
+            </div>
         </Content>
     )
 }

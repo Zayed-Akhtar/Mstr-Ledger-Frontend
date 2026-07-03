@@ -4,7 +4,7 @@ function Sidebar() {
   const menuItems = [
     { name: 'Entry', icon: 'speedometer2' },
     { name: 'Parties', icon: 'table' },
-    { name: 'Day Book', icon: 'grid' },
+    { name: 'Day Book', icon: 'grid' }, 
     { name: 'Report', icon: 'people-circle' },
   ];
 
