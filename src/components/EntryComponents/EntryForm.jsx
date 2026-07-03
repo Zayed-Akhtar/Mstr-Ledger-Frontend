@@ -1,5 +1,7 @@
 import React from 'react'
-
+import { RxPencil2 } from "react-icons/rx";
+import { RiDeleteBin5Fill } from "react-icons/ri";
+import { MdOutlineLibraryAddCheck } from "react-icons/md";
 function EntryForm() {
   return (
      <form class="row g-3 entry-form">
@@ -30,12 +32,20 @@ function EntryForm() {
                     <option>Credit</option>
                 </select>
             </div>
+            <div class="col-md-6">
+                <label for="validationDefault03" class="form-label">Amount</label>
+                <input type="number" class="form-control" id="validationDefault03" placeholder='Amount' required />
+            </div>
             <div class="mb-2" style={{display:'flex', gap:'2%'}}>
             <label for="exampleFormControlTextarea1" className="form-label">Address</label>
             <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
             </div>
-            <div class="col-12">
-                <button class="btn btn-primary" type="submit">Search Party</button>
+            <div class="col-12" style={{display:'flex', justifyContent:'space-between'}}>
+                <div style={{display:'flex', gap:'7%', width:'fit-content'}}>
+                <button type="button" className="btn btn-info icon-button"><RxPencil2 />New</button>
+                <button type="button" className="btn btn-danger icon-button"><RiDeleteBin5Fill />Delete</button>
+                </div>
+                <button className="btn btn-dark icon-button" type="submit"><MdOutlineLibraryAddCheck />Submit</button>
             </div>
         </form>
   )
