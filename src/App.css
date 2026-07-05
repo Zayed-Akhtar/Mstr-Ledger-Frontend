@@ -20,6 +20,67 @@
     border-right: 1px solid #e5e5e5;
 }
 
+/* Party modal styles (mimic Bootstrap modal behavior) */
+.party-modal-backdrop{
+  position: fixed;
+  inset: 0; /* top:0; right:0; bottom:0; left:0 */
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 1.5rem; /* small gutter on mobile */
+}
+
+.party-modal{
+  background: #fff;
+  border-radius: 0.375rem;
+  width: 100%;
+  max-width: 760px;
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.5);
+  z-index: 1051;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.party-modal-header{
+  padding: 1rem 1rem;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.party-modal-body{
+  padding: 1rem;
+  overflow: auto;
+}
+
+.party-modal-footer{
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #dee2e6;
+  display: flex;
+  justify-content: flex-end;
+  gap: .5rem;
+}
+
+.party-modal .btn-close{
+  background: transparent;
+  border: none;
+}
+
+/* make selected row visible */
+.table-hover tbody tr.table-primary{
+  background-color: #cfe2ff;
+}
+
+@media (max-width: 576px){
+  .party-modal{ max-width: 100%; height: 100%; border-radius: 0; }
+  .party-modal-backdrop{ padding: 0; }
+}
+
 .entry-form{
   width: 50%;
   margin-left: 2%;
