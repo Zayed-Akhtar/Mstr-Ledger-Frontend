@@ -15,7 +15,7 @@ function Entry() {
                     <h1 className='display-6' style={{color:'#776b6b'}}><TbTransactionRupee style={{marginRight:'3%', marginBottom:'1%'}}/>Transactions</h1>
                 </div>
             </div>
-            <div style={{display:'flex', gap:'2%'}}>
+            <div style={{display:'flex', gap:'2%', alignItems:'stretch', minHeight:'0', height: '100%'}}>
             <EntryForm/>
             <Transactions/>
             </div>

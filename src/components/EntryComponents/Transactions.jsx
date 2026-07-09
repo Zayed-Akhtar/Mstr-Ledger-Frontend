@@ -6,6 +6,9 @@ function Transactions() {
     { id: 1, Date: '1-jun', Credit: '100', Debit: '50', Balance: '50', Ph: '1234567890' },
     { id: 2, Date: '2-jun', Credit: '200', Debit: '100', Balance: '100', Ph: '0987654321' },
     { id: 3, Date: '3-jun', Credit: '300', Debit: '150', Balance: '150', Ph: '1234567890' },
+    { id: 3, Date: '3-jun', Credit: '300', Debit: '150', Balance: '150', Ph: '1234567890' },
+    { id: 3, Date: '3-jun', Credit: '300', Debit: '150', Balance: '150', Ph: '1234567890' },
+    { id: 3, Date: '3-jun', Credit: '300', Debit: '150', Balance: '150', Ph: '1234567890' },
   ];
   return (
     <div className="bd-example-snippet bd-code-snippet transaction-table" style={{width:'50%'}}> <div class="bd-example m-0 border-0"> <table class="table table-striped table-hover">
