@@ -9,6 +9,7 @@ function TransactionsModal({ visible, selectedTransaction, onClose, onSelectTran
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const serverEndpoint = import.meta.env.VITE_SERVER_ENDPOINT;
 
   useEffect(() => {
     let active = true
@@ -25,7 +26,7 @@ function TransactionsModal({ visible, selectedTransaction, onClose, onSelectTran
           params.name = q
           params.phoneNumber = q
         }
-        const url = 'http://localhost:3000/api/transaction/transactions'
+        const url = `${serverEndpoint}/transaction/transactions`
         const res = await axios.get(url, { params, signal: controller.signal })
         if (!active) return
         const data = res.data || {}
