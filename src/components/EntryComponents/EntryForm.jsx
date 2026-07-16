@@ -4,19 +4,15 @@ import { RiDeleteBin5Fill } from "react-icons/ri";
 import { MdOutlineLibraryAddCheck } from "react-icons/md";
 import { FaRegFolderOpen } from "react-icons/fa";
 import TransactionsModal from './TransactionsModal'
-import { VscSearchFuzzy } from "react-icons/vsc";
 import axios from 'axios'
+import LookupField from '../LookupField';
 
 function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedTransactionChange }) {
     const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false)
     const [date, setDate] = useState('')
     const [partyNameInput, setPartyNameInput] = useState('')
     const [partyCodeInput, setPartyCodeInput] = useState('')
-    const [partySearchResults, setPartySearchResults] = useState([])
-    const [showPartyDropdown, setShowPartyDropdown] = useState(false)
-    const [searchError, setSearchError] = useState('')
-    const [isSearching, setIsSearching] = useState(false)
-    const [isCreditandDebitSelected, setIsCreditandDebitSelected] = useState(false)
+     const [isCreditandDebitSelected, setIsCreditandDebitSelected] = useState(false)
     const [debitCredit, setDebitCredit] = useState('')
     const [currentParty, setCurrentParty] = useState(null)
     const [description, setDescription] = useState('')
@@ -25,8 +21,8 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
     const [balance, setBalance] = useState('')
     const [saveError, setSaveError] = useState('')
     const [isSaving, setIsSaving] = useState(false)
+    const [isUpdate, setIsUpdate] = useState(false);
     const serverEndpoint = import.meta.env.VITE_SERVER_ENDPOINT;
-
 
     const formatDateValue = (value) => {
         if (!value) return ''
@@ -88,38 +84,6 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
         }
     }, [selectedTransaction])
 
-    const searchParty = async (url, errorMessage) => {
-        setIsSearching(true);
-        setSearchError("");
-
-        try {
-            const response = await axios.get(url);
-            const data = response.data.items;
-
-            if (Array.isArray(data)) {
-                if (data.length > 1) {
-                    setPartySearchResults(data);
-                    setShowPartyDropdown(true);
-                } else if (data.length === 1) {
-                    populatePartyData(data[0], data[0].transactions || []);
-                } else {
-                    setSearchError(errorMessage);
-                }
-            } else if (data) {
-                populatePartyData(data, data.transactions || []);
-            } else {
-                setSearchError(errorMessage);
-            }
-        } catch (error) {
-            setSearchError(
-                error.response?.data?.message ||
-                error.message ||
-                "Search failed"
-            );
-        } finally {
-            setIsSearching(false);
-        }
-    };
 
     const clearCurrentEntry = () => {
         setDate('')
@@ -135,20 +99,6 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
         if (onSelectedTransactionChange) onSelectedTransactionChange(null)
         onPartyTransactionsLoaded?.([])
     }
-
-    const handlePartySearch = () => {
-        searchParty(
-            `${serverEndpoint}/party/party-transactions/${partyNameInput.trim()}`,
-            "No parties found with this name"
-        );
-    };
-
-    const handlePartyCodeSearch = () => {
-        searchParty(
-            `${serverEndpoint}/party/party-by-code/${partyCodeInput.trim()}`,
-            "No party found with this code"
-        );
-    };
 
     const handleSave = async (event) => {
         event.preventDefault()
@@ -191,6 +141,70 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
             setIsSaving(false)
         }
     }
+
+    const handleUpdate = async (event) => {
+        event.preventDefault();
+
+        setSaveError("");
+
+        if (!selectedTransaction?._id) {
+            setSaveError("Please select a transaction to update.");
+            return;
+        }
+
+        if (!currentParty?._id) {
+            setSaveError("Please select a party.");
+            return;
+        }
+
+        setIsSaving(true);
+
+        const payload = {
+            credit: Number(credit ?? 0),
+            debit: Number(debit ?? 0),
+            description: description.trim(),
+            transactionDate: date,
+            party: currentParty._id
+        };
+
+        try {
+
+            const response = await axios.put(
+                `${serverEndpoint}/transaction/update-transaction/${selectedTransaction._id}`,
+                payload
+            );
+
+            const party = response.data?.items;
+
+            if (party?.transactions) {
+
+                onPartyTransactionsLoaded(party.transactions);
+
+                const updatedTxn = party.transactions.find(
+                    t => t._id === selectedTransaction._id
+                );
+
+                if (updatedTxn) {
+                    onSelectedTransactionChange(updatedTxn);
+                }
+
+            }
+            setIsUpdate(false);
+
+        } catch (error) {
+
+            setSaveError(
+                error.response?.data?.message ||
+                error.message ||
+                "Failed to update transaction"
+            );
+
+        } finally {
+
+            setIsSaving(false);
+
+        }
+    };
 
     const handleDelete = async () => {
         if (!selectedTransaction?._id) {
@@ -257,9 +271,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
             },
             transactions: transactions
         }
-        if (onSelectedTransactionChange) onSelectedTransactionChange(partyData)
-        setShowPartyDropdown(false)
-        setSearchError('')
+        if (onSelectedTransactionChange && !isUpdate) onSelectedTransactionChange(partyData)
         // Pass transactions to parent component
         if (onPartyTransactionsLoaded) {
             onPartyTransactionsLoaded(transactions)
@@ -288,89 +300,30 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
 
     return (
         <>
-            <form className="row g-3 entry-form" onSubmit={handleSave}>
-                <div className="col-md-6">
-                    <label htmlFor="partyName" className="form-label">Party Name</label>
-                    <div style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
-                        <div style={{ display: 'flex' }}>
-                            <input
-                                type="text"
-                                className="form-control"
-                                id="partyName"
-                                placeholder="Party name.."
-                                value={partyNameInput}
-                                onChange={(e) => setPartyNameInput(e.target.value)}
-                                required
-                            />
-                            <button
-                                type="button"
-                                className="btn btn-outline-info"
-                                onClick={handlePartySearch}
-                                disabled={isSearching || !partyNameInput.trim()}
-                            >
-                                <VscSearchFuzzy />
-                            </button>
-                        </div>
-                        {searchError && <div className="text-danger" style={{ fontSize: '0.875rem', marginTop: '0.25rem' }}>{searchError}</div>}
-                        {showPartyDropdown && partySearchResults.length > 0 && (
-                            <div style={{
-                                position: 'absolute',
-                                top: '100%',
-                                left: 0,
-                                right: 0,
-                                backgroundColor: 'white',
-                                border: '1px solid #ced4da',
-                                borderTop: 'none',
-                                maxHeight: '300px',
-                                overflowY: 'auto',
-                                zIndex: 1000,
-                                marginTop: '-2px'
-                            }}>
-                                <table className="table table-hover mb-0" style={{ marginBottom: 0 }}>
-                                    <thead style={{ position: 'sticky', top: 0, backgroundColor: '#f8f9fa' }}>
-                                        <tr>
-                                            <th>Party Name</th>
-                                            <th>Party Code</th>
-                                            <th>Area</th>
-                                            <th>Phone Number</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {partySearchResults.map((party, idx) => (
-                                            <tr
-                                                key={party._id || idx}
-                                                onClick={() => handleSelectPartyFromDropdown(party)}
-                                                style={{ cursor: 'pointer' }}
-                                            >
-                                                <td>{party.name}</td>
-                                                <td>{party.partyCode}</td>
-                                                <td>{party.area}</td>
-                                                <td>{party.phoneNumber}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
-                    </div>
-                </div>
-                <div className="col-md-6">
-                    <label htmlFor="partyCode" className="form-label">Party Code</label>
-                    <div className="input-group">
-                        <span className="input-group-text" id="inputGroupPrepend2">#</span>
-                        <div style={{ display: 'flex', width: '80%' }}>
-                            <input type="text" className="form-control" id="partyCode" placeholder="XYZ123" aria-describedby="inputGroupPrepend2" onChange={(e) => setPartyCodeInput(e.target.value)} value={partyCodeInput} required />
-                            <button
-                                type="button"
-                                className="btn btn-outline-info"
-                                onClick={handlePartyCodeSearch}
-                                disabled={isSearching || !partyCodeInput.trim()}
-                            >
-                                <VscSearchFuzzy />
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <form className="row g-3 entry-form" onSubmit={isUpdate ? handleUpdate : handleSave}>
+                <LookupField
+                    className="col-md-6"
+                    id="partyName"
+                    label="Party Name"
+                    placeholder="Party name..."
+                    value={partyNameInput}
+                    onChange={setPartyNameInput}
+                    searchUrl={`${serverEndpoint}/party/party-transactions`}
+                    showDropdown={true}
+                    onPartySelected={populatePartyData}
+                />
+
+                <LookupField
+                    className="col-md-6"
+                    id="partyCode"
+                    label="Party Code"
+                    placeholder="XYZ123"
+                    value={partyCodeInput}
+                    onChange={setPartyCodeInput}
+                    searchUrl={`${serverEndpoint}/party/party-by-code`}
+                    showDropdown={false}
+                    onPartySelected={populatePartyData}
+                />
                 <div className="col-md-6">
                     <label htmlFor="area" className="form-label">Area</label>
                     <input type="text" className="form-control" id="area" placeholder="Area.." value={currentParty?.area || ''} readOnly required />
@@ -460,7 +413,10 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                             type="button"
                             className="btn btn-outline-primary"
                             style={{ display: 'flex', alignItems: 'center' }}
-                            onClick={() => setIsTransactionModalOpen(true)}
+                            onClick={() => {
+                                setIsTransactionModalOpen(true)
+                                setIsUpdate(true)
+                            }}
                         ><FaRegFolderOpen />Open</button>
                         <button
                             type="button"
@@ -470,10 +426,13 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                         >
                             <RiDeleteBin5Fill />
                             Delete
-                        </button>                    </div>
+                        </button>
+                    </div>
                     <button className="btn btn-dark icon-button" type="submit" disabled={isSaving || !isSaveValid}>
                         <MdOutlineLibraryAddCheck />
-                        {isSaving ? 'Saving...' : 'Save'}
+                        {isSaving
+                            ? (isUpdate ? "Updating..." : "Saving...")
+                            : (isUpdate ? "Update" : "Save")}
                     </button>
                     {saveError && (
                         <div className="text-danger" style={{ marginTop: '0.75rem' }}>{saveError}</div>
@@ -483,9 +442,14 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
             <TransactionsModal
                 visible={isTransactionModalOpen}
                 selectedTransaction={selectedTransaction}
-                onClose={() => setIsTransactionModalOpen(false)}
+                onClose={() => {
+                    setIsTransactionModalOpen(false)
+                    setIsUpdate(false)
+                }}
                 onSelectTransaction={(txn) => {
-                    if (onSelectedTransactionChange) onSelectedTransactionChange(txn)
+                    if (onSelectedTransactionChange) {
+                        onSelectedTransactionChange(txn)
+                    }
                     setIsTransactionModalOpen(false)
                 }}
             />

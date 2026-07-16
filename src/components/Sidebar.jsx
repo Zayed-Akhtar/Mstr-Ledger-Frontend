@@ -1,37 +1,67 @@
 import React, { useState } from 'react'
-
+import { FaFileSignature } from "react-icons/fa6";
+import { FaUsers } from "react-icons/fa";
+import { MdOutlineBook } from "react-icons/md";
+import { HiOutlineDocumentReport } from "react-icons/hi";
 
 function Sidebar() {
   const menuItems = [
-    { name: 'Entry', icon: 'speedometer2' },
-    { name: 'Parties', icon: 'table' },
-    { name: 'Day Book', icon: 'grid' }, 
-    { name: 'Report', icon: 'people-circle' },
+    {
+      name: "Entry",
+      icon: FaFileSignature,
+    },
+    {
+      name: "Parties",
+      icon: FaUsers,
+    },
+    {
+      name: "Day Book",
+      icon: MdOutlineBook,
+    },
+    {
+      name: "Report",
+      icon: HiOutlineDocumentReport,
+    },
   ];
 
   const [activeElement, setActiveElement] = useState();
   return (
-    <div className="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" style={{ width: '180px', height: '100vh' }}>
+    <div className="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" style={{ width: '12%', height: '100vh' }}>
       <a href="/" className="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-        <svg className="bi pe-none me-2" width="40" height="32" aria-hidden="true">
+        <svg className="bi pe-none me-2" width="25" height="32" aria-hidden="true">
           <use xlinkHref="#bootstrap"></use>
         </svg>
         <span className="fs-4">Sidebar</span>
       </a>
       <hr />
       <ul className="nav nav-pills flex-column mb-auto">
-        {
-          menuItems.map((item, index) => (
-            <li className="nav-item" onClick={() => setActiveElement(index)} key={index}>
-              <a href="#" className={`nav-link  ${activeElement === index ? 'active' : 'link-body-emphasis'}`} onClick={() => handleItemClick(item)}>
-                <svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true">
-                  <use xlinkHref={`#${item.icon}`}></use>
-                </svg>
+        {menuItems.map((item, index) => {
+          const Icon = item.icon;
+
+          return (
+            <li
+              className="nav-item"
+              key={index}
+              onClick={() => setActiveElement(index)}
+            >
+              <a
+                href="#"
+                className={`nav-link ${activeElement === index
+                    ? "active"
+                    : "link-body-emphasis"
+                  }`}
+                  style={{fontSize:'0.8rem'}}
+              >
+                <Icon
+                  size={25}
+                  style={{ marginRight: "10px" }}
+                />
+
                 {item.name}
               </a>
             </li>
-          ))
-        }
+          );
+        })}
       </ul>
       <hr />
       <div className="dropdown">

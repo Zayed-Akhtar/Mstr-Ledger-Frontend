@@ -11,7 +11,7 @@ function Transactions({ transactions = [], onSelectTransaction }) {
   }
 
   return (
-    <div className="bd-example-snippet bd-code-snippet transaction-table" style={{width:'50%'}}>
+    <div className="bd-example-snippet bd-code-snippet transaction-table" style={{width:'61%'}}>
       <div className="bd-example m-0 border-0">
         <table className="table table-striped table-hover">
           <thead>
