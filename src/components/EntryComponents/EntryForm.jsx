@@ -3,16 +3,17 @@ import { RxPencil2 } from "react-icons/rx";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { MdOutlineLibraryAddCheck } from "react-icons/md";
 import { FaRegFolderOpen } from "react-icons/fa";
-import TransactionsModal from './TransactionsModal'
+import TransactionsModal from '../TransactionComponents/TransactionsModal'
 import axios from 'axios'
-import LookupField from '../LookupField';
+import LookupField from '../common/LookupField';
+import { getTodayDate } from '../../helpers/dateHelpers';
 
-function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedTransactionChange }) {
+function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedTransactionChange, onResetDateFilter }) {
     const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false)
-    const [date, setDate] = useState('')
+    const [date, setDate] = useState(getTodayDate())
     const [partyNameInput, setPartyNameInput] = useState('')
     const [partyCodeInput, setPartyCodeInput] = useState('')
-     const [isCreditandDebitSelected, setIsCreditandDebitSelected] = useState(false)
+    const [isCreditandDebitSelected, setIsCreditandDebitSelected] = useState(false)
     const [debitCredit, setDebitCredit] = useState('')
     const [currentParty, setCurrentParty] = useState(null)
     const [description, setDescription] = useState('')
@@ -32,7 +33,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
     }
 
     useEffect(() => {
-        if (selectedTransaction) {
+        if (selectedTransaction?._id) {
             setDate(formatDateValue(selectedTransaction.transactionDate))
 
             const credit = Number(selectedTransaction.credit ?? 0)
@@ -74,7 +75,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
             setDebit(selectedTransaction.debit ?? '')
             setBalance(selectedTransaction.balance ?? '')
         } else {
-            setDate('')
+            setDate(getTodayDate());
             setDebitCredit('')
             setIsCreditandDebitSelected(false)
             setDescription('')
@@ -84,9 +85,8 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
         }
     }, [selectedTransaction])
 
-
     const clearCurrentEntry = () => {
-        setDate('')
+        setDate(getTodayDate());
         setPartyNameInput('')
         setPartyCodeInput('')
         setCurrentParty(null)
@@ -96,8 +96,10 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
         setCredit('')
         setDebit('')
         setBalance('')
+        setIsUpdate(false)
         if (onSelectedTransactionChange) onSelectedTransactionChange(null)
         onPartyTransactionsLoaded?.([])
+        onResetDateFilter?.()
     }
 
     const handleSave = async (event) => {
@@ -314,7 +316,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                 />
 
                 <LookupField
-                    className="col-md-6"
+                    className="col-md-5"
                     id="partyCode"
                     label="Party Code"
                     placeholder="XYZ123"
@@ -324,11 +326,22 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                     showDropdown={false}
                     onPartySelected={populatePartyData}
                 />
-                <div className="col-md-6">
-                    <label htmlFor="area" className="form-label">Area</label>
-                    <input type="text" className="form-control" id="area" placeholder="Area.." value={currentParty?.area || ''} readOnly required />
+                <div className="col-md-5">
+                    <label htmlFor="date" className="form-label">Date</label>
+                    <input
+                        type="date"
+                        className="form-control"
+                        id="date"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        required
+                    />
                 </div>
                 <div className="col-md-6">
+                    <label htmlFor="PhNumber" className="form-label">Ph No.</label>
+                    <input type="text" className="form-control" id="phNumber" placeholder="Phone No." value={currentParty?.phoneNumber || ''} readOnly />
+                </div>
+                <div className="col-md-7">
                     <label htmlFor="description" className="form-label">Description</label>
                     <input
                         type="text"
@@ -337,17 +350,6 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                         placeholder="Bill / Cash"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="col-md-6">
-                    <label htmlFor="date" className="form-label">Date</label>
-                    <input
-                        type="date"
-                        className="form-control"
-                        id="date"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
                         required
                     />
                 </div>
@@ -370,27 +372,29 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                         <option value="Credit & Debit">Credit & Debit</option>
                     </select>
                 </div>
-                <div className="col-md-6">
-                    <label htmlFor="amountCredit" className="form-label">
-                        {debitCredit === 'Debit' ? 'Debit' : debitCredit === 'Credit' ? 'Credit' : isCreditandDebitSelected ? 'Credit' : 'Amount'}
-                    </label>
-                    <input
-                        type="number"
-                        className="form-control"
-                        id="amountCredit"
-                        placeholder="Amount"
-                        value={debitCredit === 'Debit' ? debit : credit}
-                        onChange={(e) => {
-                            const value = e.target.value
-                            if (debitCredit === 'Debit') {
-                                setDebit(value)
-                            } else {
-                                setCredit(value)
-                            }
-                        }}
-                        required
-                    />
-                </div>
+                {debitCredit &&
+                    (<div className="col-md-6">
+                        <label htmlFor="amountCredit" className="form-label">
+                            {debitCredit === 'Debit' ? 'Debit' : 'Credit'}
+                        </label>
+                        <input
+                            type="number"
+                            className="form-control"
+                            id="amountCredit"
+                            placeholder="Amount"
+                            value={debitCredit === 'Debit' ? debit : credit}
+                            onChange={(e) => {
+                                const value = e.target.value
+                                if (debitCredit === 'Debit') {
+                                    setDebit(value)
+                                } else {
+                                    setCredit(value)
+                                }
+                            }}
+                            required
+                        />
+                    </div>
+                )}
                 {isCreditandDebitSelected &&
                     <div className="col-md-6" >
                         <label htmlFor="amountDebit" className="form-label">Debit</label>
@@ -407,7 +411,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                 }
 
                 <div className="col-12" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', gap: '7%', width: 'fit-content' }}>
+                    <div style={{ display: 'flex', gap: '7%', width: 'fit-content', height:'fit-content' }}>
                         <button type="button" onClick={clearCurrentEntry} className="btn btn-info icon-button"><RxPencil2 />New</button>
                         <button
                             type="button"
@@ -423,12 +427,13 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                             className="btn btn-danger icon-button"
                             onClick={handleDelete}
                             disabled={!selectedTransaction?._id || isSaving}
+                            style={{height:'fit-content'}}
                         >
                             <RiDeleteBin5Fill />
                             Delete
                         </button>
                     </div>
-                    <button className="btn btn-dark icon-button" type="submit" disabled={isSaving || !isSaveValid}>
+                    <button className="btn btn-dark icon-button" style={{height:'fit-content'}} type="submit" disabled={isSaving || !isSaveValid}>
                         <MdOutlineLibraryAddCheck />
                         {isSaving
                             ? (isUpdate ? "Updating..." : "Saving...")

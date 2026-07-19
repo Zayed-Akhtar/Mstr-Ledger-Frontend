@@ -9,6 +9,7 @@ function TransactionsModal({ visible, selectedTransaction, onClose, onSelectTran
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const tableHeaders = ['Txn No.', 'Party Name', 'Party Code', 'Phone', 'Date', 'Credit', 'Debit', 'Balance', 'Description']
   const serverEndpoint = import.meta.env.VITE_SERVER_ENDPOINT;
 
   useEffect(() => {
@@ -74,14 +75,15 @@ function TransactionsModal({ visible, selectedTransaction, onClose, onSelectTran
           <table className="table table-hover table-bordered mb-0">
             <thead>
               <tr>
-                <th>Party Name</th>
+                {tableHeaders.map(headerName => <th>{headerName}</th>)}
+                {/* <th>Party Name</th>
                 <th>Party Code</th>
                 <th>Phone</th>
                 <th>Date</th>
                 <th>Credit</th>
                 <th>Debit</th>
                 <th>Balance</th>
-                <th>Description</th>
+                <th>Description</th> */}
               </tr>
             </thead>
             <tbody>
@@ -103,6 +105,7 @@ function TransactionsModal({ visible, selectedTransaction, onClose, onSelectTran
                     style={{ cursor: party ? 'pointer' : 'default' }}
                     onClick={() => tx && onSelectTransaction(tx)}
                   >
+                    <td>{tx.transactionNumber}</td>
                     <td>{partyName}</td>
                     <td>{partyCode}</td>
                     <td>{partyPhone}</td>

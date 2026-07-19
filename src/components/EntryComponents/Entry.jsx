@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import EntryForm from './EntryForm'
 import Content from '../Content'
-import Transactions from './Transactions'
+import Transactions from '../TransactionComponents/Transactions'
 import { TbFileDatabase } from "react-icons/tb";
 import { TbTransactionRupee } from "react-icons/tb";
 function Entry() {
     const [partyTransactions, setPartyTransactions] = useState([])
     const [selectedTransaction, setSelectedTransaction] = useState(null)
+    const [resetDateFilter, setResetDateFilter] = useState(0);
 
     return (
         <Content>
@@ -23,8 +24,9 @@ function Entry() {
                             onPartyTransactionsLoaded={setPartyTransactions}
                             selectedTransaction={selectedTransaction}
                             onSelectedTransactionChange={setSelectedTransaction}
+                            onResetDateFilter={()=>setResetDateFilter(prev=>prev+1)}
                         />
-                        <Transactions transactions={partyTransactions} onSelectTransaction={setSelectedTransaction} />
+                        <Transactions transactions={partyTransactions} onSelectTransaction={setSelectedTransaction} resetDate={resetDateFilter} />
                         </div>
         </Content>
     )
