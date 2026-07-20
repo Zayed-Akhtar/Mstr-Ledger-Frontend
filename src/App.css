@@ -84,8 +84,9 @@
   width: 50%;
   margin-left: 2%;
   padding: 2%;
-  height: 72%;
-  max-height: 640px;
+  /* height: 74%;
+  max-height: 640px; */
+  height: fit-content;
   border-radius: 7%;
   box-shadow: 0 5px 9px rgba(0, 0, 0, 0.2);
 }

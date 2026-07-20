@@ -341,7 +341,11 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                     <label htmlFor="PhNumber" className="form-label">Ph No.</label>
                     <input type="text" className="form-control" id="phNumber" placeholder="Phone No." value={currentParty?.phoneNumber || ''} readOnly />
                 </div>
-                <div className="col-md-7">
+                <div className="col-md-6">
+                    <label htmlFor="Area" className="form-label">Area</label>
+                    <input type="text" className="form-control" id="Area" placeholder="Area..." value={currentParty?.area || ''} readOnly />
+                </div>
+                <div className="col-md-6">
                     <label htmlFor="description" className="form-label">Description</label>
                     <input
                         type="text"
@@ -353,7 +357,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                         required
                     />
                 </div>
-                <div className="col-md-4">
+                <div className="col-md-6">
                     <label htmlFor="debitCredit" className="form-label">Debit / Credit</label>
                     <select
                         className="form-select"
