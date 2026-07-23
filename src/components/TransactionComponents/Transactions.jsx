@@ -22,17 +22,15 @@ function Transactions({ transactions = [], onSelectTransaction, resetDate, curre
     return date.toLocaleDateString()
   }
 
- const handlePdfDownload = async () => {
+const handlePdfDownload = async () => {
 
     if (!currentParty?._id) {
         alert("Please select a party first.");
         return;
     }
-    console.log('Date selected', fromDate);
-    console.log('to date', toDate);
-    
-    
+
     try {
+
         const response = await axios.get(
             `${serverEndpoint}/transaction/export-pdf`,
             {
@@ -45,26 +43,45 @@ function Transactions({ transactions = [], onSelectTransaction, resetDate, curre
             }
         );
 
-        const url = window.URL.createObjectURL(
-            new Blob([response.data])
+        // Default filename
+        let fileName = "transactions.pdf";
+
+        // Read filename from Content-Disposition header
+        const disposition = response.headers["content-disposition"];        
+        if (disposition) {
+
+            const match = disposition.match(/filename="?([^"]+)"?/);
+
+            if (match && match[1]) {
+                fileName = match[1];
+            }
+
+        }
+
+        const blob = new Blob(
+            [response.data],
+            { type: "application/pdf" }
         );
+
+        const url = window.URL.createObjectURL(blob);
 
         const link = document.createElement("a");
 
         link.href = url;
-
-        link.download = "transactions.pdf";
+        link.download = fileName;
 
         document.body.appendChild(link);
 
         link.click();
 
-        link.remove();
+        document.body.removeChild(link);
 
         window.URL.revokeObjectURL(url);
 
     } catch (error) {
-        console.error(error);
+
+        console.error("Error downloading PDF:", error);
+
     }
 };
 
