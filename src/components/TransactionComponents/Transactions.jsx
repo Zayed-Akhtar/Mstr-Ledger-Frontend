@@ -100,7 +100,7 @@ const handlePdfDownload = async () => {
   });
 
   return (
-    <div className="bd-example-snippet bd-code-snippet transaction-table">
+    <div className="bd-example-snippet bd-code-snippet transaction-table wht-bg">
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <DateRangeFilter
           fromDate={fromDate}

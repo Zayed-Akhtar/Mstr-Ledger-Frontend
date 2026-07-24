@@ -302,7 +302,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
 
     return (
         <>
-            <form className="row g-3 entry-form" onSubmit={isUpdate ? handleUpdate : handleSave}>
+            <form className="row g-3 entry-form wht-bg"  onSubmit={isUpdate ? handleUpdate : handleSave}>
                 <LookupField
                     className="col-md-6"
                     id="partyName"

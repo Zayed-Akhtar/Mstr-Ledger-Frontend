@@ -26,7 +26,7 @@ function Sidebar() {
 
   const [activeElement, setActiveElement] = useState();
   return (
-    <div className="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" style={{ width: '12%', height: '100vh' }}>
+    <div className="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary sidebar" style={{  }}>
       <a href="/" className="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
         <svg className="bi pe-none me-2" width="25" height="32" aria-hidden="true">
           <use xlinkHref="#bootstrap"></use>
