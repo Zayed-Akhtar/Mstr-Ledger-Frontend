@@ -1,4 +1,6 @@
 import React from "react";
+import StatusBadge from "../../common/StatusBadge";
+import ActionDropdown from "../../common/ActionDropdown";
 
 const PartyTableRow = ({
     party,
@@ -31,30 +33,21 @@ const PartyTableRow = ({
 
             <td>
 
-                <span
-                    className={`status-badge ${
+                <StatusBadge
+                    status={
                         party.active
-                            ? "status-active"
-                            : "status-inactive"
-                    }`}
-                >
-
-                    {party.active ? "Active" : "Inactive"}
-
-                </span>
+                            ? "Active"
+                            : "Inactive"
+                    }
+                />
 
             </td>
 
             <td className="text-center">
 
-                <button
-                    type="button"
-                    className="btn btn-sm action-btn"
-                >
-
-                    <i className="bi bi-three-dots-vertical"></i>
-
-                </button>
+                <ActionDropdown
+                    onClick={() => { }}
+                />
 
             </td>
 

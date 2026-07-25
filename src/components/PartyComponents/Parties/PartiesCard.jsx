@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import PartiesToolbar from "./PartiesToolbar";
-import PartiesTable from "./PartiesTable";
-import PaginationBar from "./PaginationBar";
+import ManagementCard from "../../common/ManagementCard";
+import PartyTableRow from "./PartyTableRow";
 
 const PartiesCard = ({
     selectedParty,
@@ -27,6 +26,14 @@ const PartiesCard = ({
             area: "Main Road",
             email: "khan@gmail.com",
             active: false
+        },
+        {
+            _id: 3,
+            name: "Ali Traders",
+            mobileNumber: "9876543785",
+            area: "Nala Road",
+            email: "Ali@gmail.com",
+            active: true
         }
     ];
 
@@ -34,33 +41,80 @@ const PartiesCard = ({
         party.name.toLowerCase().includes(search.toLowerCase())
     );
 
+ const columns = [
+
+        {
+            key: "name",
+            label: "Party Name"
+        },
+
+        {
+            key: "mobile",
+            label: "Mobile Number"
+        },
+
+        {
+            key: "area",
+            label: "Area"
+        },
+
+        {
+            key: "email",
+            label: "Email"
+        },
+
+        {
+            key: "status",
+            label: "Status"
+        },
+
+        {
+            key: "actions",
+            label: "Actions",
+            className: "text-center"
+        }
+
+    ];
+
     return (
 
-        <div className="card border-0 shadow-sm rounded-4 parties-card">
+        <ManagementCard
 
-            <div className="card-body p-4">
+            title="Parties"
 
-                <PartiesToolbar
-                    search={search}
-                    setSearch={setSearch}
-                    totalParties={filteredParties.length}
-                />
+            totalRecords={filteredParties.length}
 
-                <PartiesTable
-                    parties={filteredParties}
-                    selectedParty={selectedParty}
-                    setSelectedParty={setSelectedParty}
-                />
+            search={search}
 
-                <PaginationBar
-                    startIndex={1}
-                    endIndex={filteredParties.length}
-                    totalRecords={filteredParties.length}
-                />
+            onSearchChange={setSearch}
 
-            </div>
+            buttonText="Add Party"
 
-        </div>
+            columns={columns}
+
+        >
+
+            {
+
+                filteredParties.map((party)=>(
+
+                    <PartyTableRow
+
+                        key={party._id}
+
+                        party={party}
+
+                        selectedParty={selectedParty}
+
+                        setSelectedParty={setSelectedParty}
+
+                    />
+
+                ))
+
+            }
+
+        </ManagementCard>
 
     );
 

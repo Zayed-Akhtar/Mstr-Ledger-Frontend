@@ -140,11 +140,10 @@ width: 12%;
 
 /* Parties */
 
-.parties-card{
+.management-card{
     border-radius:20px;
     background:#fff;
     box-shadow:0 8px 30px rgba(15,23,42,.06);
-
 }
 
 .search-box{

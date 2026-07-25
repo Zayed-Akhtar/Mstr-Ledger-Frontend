@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import PartiesCard from "../PartyComponents/Parties/PartiesCard";
 import PartyDetailsCard from "../PartyComponents/PartyDetails/PartyDetailsCard";
+import AreasCard from "../AreaComponents/AreasCard";
 
 const PartyManagementPage = () => {
 
@@ -8,7 +9,7 @@ const PartyManagementPage = () => {
 
     return (
 
-        <div className="container-fluid py-4" style={{backgroundColor:'#fafafa'}}>
+        <div className="container-fluid py-4" style={{ backgroundColor: '#fafafa'}}>
 
             <div className="row g-4">
 
@@ -18,6 +19,12 @@ const PartyManagementPage = () => {
                         selectedParty={selectedParty}
                         setSelectedParty={setSelectedParty}
                     />
+
+                    <div className="mt-4">
+
+                        <AreasCard />
+
+                    </div>
 
                 </div>
 
