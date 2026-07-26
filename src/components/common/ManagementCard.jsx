@@ -1,52 +1,156 @@
-import React from "react";
+import React, {
+    useEffect,
+    useMemo,
+    useState
+} from "react";
+
 import CardHeader from "./CardHeader";
 import DataTable from "./DataTable";
-import PaginationBar from "../PartyComponents/Parties/PaginationBar";
+import PaginationBar from "./PaginationBar";
 
 const ManagementCard = ({
+
     title,
-    totalRecords,
-    search,
-    onSearchChange,
-    buttonText,
+
+    data,
+
     columns,
-    children,
+
+    renderRow,
+
+    buttonText,
+
+    searchField,
+
+    pageSize = 5,
+
     showSearch = true,
+
     showFilter = true,
+
     showAddButton = true,
-    showPagination = true
+
+    showPagination = true,
 }) => {
+
+    const [search, setSearch] = useState("");
+
+    const [currentPage, setCurrentPage] = useState(1);
+
+    /**
+     * Filter Data
+     */
+
+    const filteredData = useMemo(() => {
+
+        if (!search.trim()) {
+
+            return data;
+
+        }
+
+        return data.filter((item) =>
+
+            String(item[searchField] || "")
+                .toLowerCase()
+                .includes(search.toLowerCase())
+
+        );
+
+    }, [data, search, searchField]);
+
+    /**
+     * Reset page after searching
+     */
+
+    useEffect(() => {
+
+        setCurrentPage(1);
+
+    }, [search]);
+
+    /**
+     * Pagination
+     */
+
+    const totalPages = Math.ceil(
+        filteredData.length / pageSize
+    );
+
+    const startIndex = (currentPage - 1) * pageSize;
+
+    const currentItems = filteredData.slice(
+
+        startIndex,
+
+        startIndex + pageSize
+
+    );
 
     return (
 
-        <div className="card border-0 shadow-sm rounded-4 management-card">
+        <div className="card border-0 shadow-sm rounded-4 management-card h-100">
 
-            <div className="card-body p-4">
+            <div className="card-body d-flex flex-column h-100 p-4">
 
                 <CardHeader
+
                     title={title}
-                    totalRecords={totalRecords}
+
+                    totalRecords={filteredData.length}
+
                     search={search}
-                    onSearchChange={onSearchChange}
+
+                    onSearchChange={setSearch}
+
                     buttonText={buttonText}
+
                     showSearch={showSearch}
+
                     showFilter={showFilter}
+
                     showAddButton={showAddButton}
+
                 />
 
-                <DataTable
-                    columns={columns}
-                >
+                <div className="table-wrapper flex-grow-1">
 
-                    {children}
+                    <DataTable
 
-                </DataTable>
+                        columns={columns}
 
-                {showPagination && (<PaginationBar
-                    startIndex={1}
-                    endIndex={totalRecords}
-                    totalRecords={totalRecords}
-                />)}
+                    >
+
+                        {
+
+                            currentItems.map((item) => renderRow(item))
+                        }
+
+                    </DataTable>
+
+                </div>
+
+                {
+
+                    showPagination && (
+
+                        <PaginationBar
+
+                            currentPage={currentPage}
+
+                            setCurrentPage={setCurrentPage}
+
+                            pageSize={pageSize}
+
+                            totalPages={totalPages}
+
+                            totalRecords={filteredData.length}
+
+                        />
+
+                    )
+
+                }
 
             </div>
 

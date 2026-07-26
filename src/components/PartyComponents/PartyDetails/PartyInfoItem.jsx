@@ -1,7 +1,6 @@
 import React from "react";
 
 const PartyInfoItem = ({
-    icon,
     label,
     value
 }) => {
@@ -9,10 +8,7 @@ const PartyInfoItem = ({
     return (
 
         <div className="d-flex align-items-center py-3 border-bottom">
-
-            <i className={`bi ${icon} fs-5 text-primary me-3`}></i>
-
-            <div>
+            <div className="d-flex" style={{gap:'5%', width:'50%'}}>
 
                 <small className="text-secondary">
 
@@ -22,7 +18,7 @@ const PartyInfoItem = ({
 
                 <div className="fw-semibold">
 
-                    {value || "--"}
+                    {value || "-"}
 
                 </div>
 

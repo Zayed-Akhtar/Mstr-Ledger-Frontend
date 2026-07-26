@@ -9,7 +9,7 @@ const CardHeader = ({
     buttonText,
     showSearch,
     showFilter,
-    showAddButton,
+    showAddButton
 }) => {
 
     return (
@@ -33,30 +33,60 @@ const CardHeader = ({
             </div>
 
             <div className="d-flex flex-wrap align-items-center gap-2">
-                {showSearch && (<SearchBox
-                    value={search}
-                    onChange={onSearchChange}
-                    placeholder={`Search ${title.toLowerCase()}...`}
-                />)}
-                {showFilter && (<button
-                    className="btn btn-light border filter-btn"
-                >
 
-                    <i className="bi bi-funnel me-2"></i>
+                {
 
-                    Filters
+                    showSearch && (
 
-                </button>)}
-                {showAddButton && (<button
-                    className="btn add-party-btn"
-                >
+                        <SearchBox
 
-                    <i className="bi bi-plus-lg me-2"></i>
+                            value={search}
 
-                    {buttonText}
+                            onChange={onSearchChange}
 
-                </button>)}
+                            placeholder={`Search ${title.toLowerCase()}...`}
 
+                        />
+
+                    )
+
+                }
+
+                {
+
+                    showFilter && (
+
+                        <button
+                            className="btn btn-light border filter-btn"
+                        >
+
+                            <i className="bi bi-funnel me-2"></i>
+
+                            Filters
+
+                        </button>
+
+                    )
+
+                }
+
+                {
+
+                    showAddButton && (
+
+                        <button
+                            className="btn add-party-btn"
+                        >
+
+                            <i className="bi bi-plus-lg me-2"></i>
+
+                            {buttonText}
+
+                        </button>
+
+                    )
+
+                }
 
             </div>
 

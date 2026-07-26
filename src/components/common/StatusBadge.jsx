@@ -1,22 +1,18 @@
 import React from "react";
 
-const StatusBadge = ({
-    status
-}) => {
-
-    const isActive = status === "Active";
+const StatusBadge = ({ active }) => {
 
     return (
 
         <span
             className={`status-badge ${
-                isActive
+                active
                     ? "status-active"
                     : "status-inactive"
             }`}
         >
 
-            {status}
+            {active ? "Active" : "Inactive"}
 
         </span>
 

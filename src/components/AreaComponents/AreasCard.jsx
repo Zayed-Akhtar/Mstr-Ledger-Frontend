@@ -1,50 +1,52 @@
-import React, { useState } from "react";
-import AreaTableRow from "./AreaTableRow";
+import React from "react";
 import ManagementCard from "../common/ManagementCard";
+import AreaTableRow from "./AreaTableRow";
 
 const AreasCard = () => {
-
-    const [search, setSearch] = useState("");
 
     const areas = [
 
         {
             _id: 1,
             name: "Civil Lines",
-            description: "Main civil area and surrounding regions",
-            totalParties: 8,
+            description: "Main civil area",
+            totalParties: 12,
             active: true
         },
 
         {
             _id: 2,
             name: "Main Market",
-            description: "Commercial market and nearby areas",
-            totalParties: 12,
+            description: "Commercial Area",
+            totalParties: 9,
             active: true
         },
 
         {
             _id: 3,
-            name: "Station Road",
-            description: "Area around railway station",
+            name: "Sector 19",
+            description: "Residential Area",
             totalParties: 6,
             active: true
         },
 
         {
             _id: 4,
-            name: "Old Town",
-            description: "Old town and heritage region",
-            totalParties: 4,
+            name: "Panposh",
+            description: "Industrial Area",
+            totalParties: 3,
             active: false
+        },
+
+        {
+            _id: 5,
+            name: "Station Road",
+            description: "Railway Region",
+            totalParties: 7,
+            active: true
         }
 
     ];
-
-    const filteredAreas = areas.filter((area) =>
-        area.name.toLowerCase().includes(search.toLowerCase())
-    );
 
     const columns = [
 
@@ -82,32 +84,29 @@ const AreasCard = () => {
 
             title="Areas"
 
-            totalRecords={filteredAreas.length}
-
-            search={search}
-
-            onSearchChange={setSearch}
-
-            buttonText="Add Area"
+            data={areas}
 
             columns={columns}
 
-        >
+            searchField="name"
 
-            {
+            buttonText="Add Area"
 
-                filteredAreas.map((area) => (
+            pageSize={5}
 
-                    <AreaTableRow
-                        key={area._id}
-                        area={area}
-                    />
+            renderRow={(area) => (
 
-                ))
+                <AreaTableRow
 
-            }
+                    key={area._id}
 
-        </ManagementCard>
+                    area={area}
+
+                />
+
+            )}
+
+        />
 
     );
 

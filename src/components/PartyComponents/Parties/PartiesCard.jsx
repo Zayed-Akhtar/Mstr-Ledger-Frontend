@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import ManagementCard from "../../common/ManagementCard";
 import PartyTableRow from "./PartyTableRow";
 
@@ -7,10 +7,8 @@ const PartiesCard = ({
     setSelectedParty
 }) => {
 
-    const [search, setSearch] = useState("");
-
-    // Replace with API data later
     const parties = [
+
         {
             _id: 1,
             name: "Malik Traders",
@@ -19,29 +17,55 @@ const PartiesCard = ({
             email: "malik@gmail.com",
             active: true
         },
+
         {
             _id: 2,
             name: "Khan Enterprises",
-            mobileNumber: "9876543211",
-            area: "Main Road",
+            mobileNumber: "9123456780",
+            area: "Main Market",
             email: "khan@gmail.com",
-            active: false
+            active: true
         },
+
         {
             _id: 3,
-            name: "Ali Traders",
-            mobileNumber: "9876543785",
-            area: "Nala Road",
-            email: "Ali@gmail.com",
+            name: "Modern Steel",
+            mobileNumber: "9871112222",
+            area: "Station Road",
+            email: "steel@gmail.com",
+            active: false
+        },
+
+        {
+            _id: 4,
+            name: "ABC Hardware",
+            mobileNumber: "9876549999",
+            area: "Sector 19",
+            email: "abc@gmail.com",
+            active: true
+        },
+
+        {
+            _id: 5,
+            name: "Rourkela Cement",
+            mobileNumber: "9876500000",
+            area: "Udit Nagar",
+            email: "cement@gmail.com",
+            active: true
+        },
+
+        {
+            _id: 6,
+            name: "National Traders",
+            mobileNumber: "9999999999",
+            area: "Panposh",
+            email: "national@gmail.com",
             active: true
         }
+
     ];
 
-    const filteredParties = parties.filter((party) =>
-        party.name.toLowerCase().includes(search.toLowerCase())
-    );
-
- const columns = [
+    const columns = [
 
         {
             key: "name",
@@ -82,39 +106,33 @@ const PartiesCard = ({
 
             title="Parties"
 
-            totalRecords={filteredParties.length}
-
-            search={search}
-
-            onSearchChange={setSearch}
-
-            buttonText="Add Party"
+            data={parties}
 
             columns={columns}
 
-        >
+            searchField="name"
 
-            {
+            buttonText="Add Party"
 
-                filteredParties.map((party)=>(
+            pageSize={5}
 
-                    <PartyTableRow
+            renderRow={(party) => (
 
-                        key={party._id}
+                <PartyTableRow
 
-                        party={party}
+                    key={party._id}
 
-                        selectedParty={selectedParty}
+                    party={party}
 
-                        setSelectedParty={setSelectedParty}
+                    selectedParty={selectedParty}
 
-                    />
+                    setSelectedParty={setSelectedParty}
 
-                ))
+                />
 
-            }
+            )}
 
-        </ManagementCard>
+        />
 
     );
 

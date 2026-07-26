@@ -1,4 +1,3 @@
-import React from "react";
 import PartyInfoItem from "./PartyInfoItem";
 import PartyStatistics from "./PartyStatistics";
 
@@ -8,8 +7,7 @@ const PartyDetailsCard = ({ party }) => {
 
         return (
 
-            <div className="card border-0 shadow-sm rounded-4">
-
+<div className="card border-0 shadow-sm rounded-4 h-100 party-details-card">
                 <div className="card-body text-center py-5">
 
                     <i className="bi bi-person-circle display-3 text-secondary"></i>
@@ -36,11 +34,10 @@ const PartyDetailsCard = ({ party }) => {
 
     return (
 
-        <div className="card border-0 shadow-sm rounded-4">
+        <div className="card border-0 shadow-sm rounded-4 h-100" style={{overflowY:'auto', position:'relative'}}>
 
-            <div className="card-body p-4">
-
-                <div className="text-center mb-4">
+        <div className="card-body d-flex flex-column p-4">
+                <div className="text-center mb-4 party-details-header">
 
                     <div className="party-avatar">
 
@@ -61,7 +58,6 @@ const PartyDetailsCard = ({ party }) => {
                     </span>
 
                 </div>
-
                 <PartyInfoItem
                     icon="bi-telephone"
                     label="Mobile"

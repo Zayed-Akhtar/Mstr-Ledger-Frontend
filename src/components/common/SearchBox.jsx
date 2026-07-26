@@ -13,8 +13,9 @@ const SearchBox = ({
             <input
                 type="text"
                 value={value}
-                onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
+                onChange={(e) => onChange(e.target.value)}
+                style={{color:"black"}}
             />
 
             <i className="bi bi-search"></i>

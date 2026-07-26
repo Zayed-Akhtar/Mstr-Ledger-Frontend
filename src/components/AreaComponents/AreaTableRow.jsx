@@ -29,11 +29,7 @@ const AreaTableRow = ({ area }) => {
             <td>
 
                 <StatusBadge
-                    status={
-                        area.active
-                            ? "Active"
-                            : "Inactive"
-                    }
+                    active={area.active}
                 />
 
             </td>

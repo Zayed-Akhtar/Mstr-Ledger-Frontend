@@ -32,15 +32,9 @@ const PartyTableRow = ({
             <td>{party.email}</td>
 
             <td>
-
                 <StatusBadge
-                    status={
-                        party.active
-                            ? "Active"
-                            : "Inactive"
-                    }
+                    active={party.active}
                 />
-
             </td>
 
             <td className="text-center">

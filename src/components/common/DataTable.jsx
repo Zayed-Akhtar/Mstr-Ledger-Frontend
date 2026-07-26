@@ -13,18 +13,22 @@ const DataTable = ({
 
                 <tr>
 
-                    {columns.map((column) => (
+                    {
 
-                        <th
-                            key={column.key}
-                            className={column.className}
-                        >
+                        columns.map((column) => (
 
-                            {column.label}
+                            <th
+                                key={column.key}
+                                className={column.className || ""}
+                            >
 
-                        </th>
+                                {column.label}
 
-                    ))}
+                            </th>
+
+                        ))
+
+                    }
 
                 </tr>
 

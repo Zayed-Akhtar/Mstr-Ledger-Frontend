@@ -14,7 +14,7 @@ function App() {
   return (
     <>
       <Header/>
-      <div style={{ display: 'flex', minHeight: '100vh'}}>
+      <div style={{ display: 'flex', minHeight: '90vh'}}>
         <Sidebar selectedItem={selectedItem} onSelect={setSelectedItem} />
         {/* <Entry/> */}
         <PartyManagementPage/>
