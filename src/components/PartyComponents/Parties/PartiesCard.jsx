@@ -1,11 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import ManagementCard from "../../common/ManagementCard";
 import PartyTableRow from "./PartyTableRow";
+import PartyModal from "./PartyModal";
+import ConfirmDeleteModal from "../../common/ConfirmDeleteModal";
 
 const PartiesCard = ({
     selectedParty,
     setSelectedParty
 }) => {
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [partyToDelete, setPartyToDelete] = useState(null);
+    const [showPartyModal, setShowPartyModal] = useState(false);
+    const [modalMode, setModalMode] = useState("create");
 
     const parties = [
 
@@ -100,9 +106,48 @@ const PartiesCard = ({
 
     ];
 
+    const handleAddParty = () => {
+
+        setSelectedParty(null);
+
+        setModalMode("create");
+
+        setShowPartyModal(true);
+
+    };
+
+    const handleEditParty = (party) => {
+
+        setSelectedParty(party);
+
+        setModalMode("edit");
+
+        setShowPartyModal(true);
+
+    };
+
+    const handleDeleteParty = (party) => {
+
+        setPartyToDelete(party);
+
+        setShowDeleteModal(true);
+
+    };
+
+    const confirmDelete = () => {
+
+        console.log("Deleting Party");
+
+        console.log(partyToDelete);
+
+        setShowDeleteModal(false);
+
+        setPartyToDelete(null);
+
+    };
     return (
 
-        <ManagementCard
+        <><ManagementCard
 
             title="Parties"
 
@@ -116,6 +161,8 @@ const PartiesCard = ({
 
             pageSize={5}
 
+            onAddClick={handleAddParty}
+
             renderRow={(party) => (
 
                 <PartyTableRow
@@ -128,11 +175,45 @@ const PartiesCard = ({
 
                     setSelectedParty={setSelectedParty}
 
+                    onEdit={handleEditParty}
+
+                    onDelete={handleDeleteParty}
                 />
 
-            )}
+            )} />
+            <PartyModal
 
-        />
+                show={showPartyModal}
+
+                onHide={() => setShowPartyModal(false)}
+
+                mode={modalMode}
+
+                party={selectedParty}
+
+            />
+            <ConfirmDeleteModal
+
+                show={showDeleteModal}
+
+                onHide={() => {
+
+                    setShowDeleteModal(false);
+
+                    setPartyToDelete(null);
+
+                }}
+
+                title="Delete Party"
+
+                message="Are you sure you want to delete"
+
+                itemName={partyToDelete?.name}
+
+                onConfirm={confirmDelete}
+
+            />
+        </>
 
     );
 

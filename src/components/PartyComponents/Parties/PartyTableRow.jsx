@@ -5,18 +5,20 @@ import ActionDropdown from "../../common/ActionDropdown";
 const PartyTableRow = ({
     party,
     selectedParty,
-    setSelectedParty
+    setSelectedParty,
+    onEdit,
+    onDelete
 }) => {
 
     return (
 
         <tr
+            onClick={() => setSelectedParty(party)}
             className={
                 selectedParty?._id === party._id
                     ? "selected"
                     : ""
             }
-            onClick={() => setSelectedParty(party)}
         >
 
             <td className="party-name">
@@ -40,7 +42,10 @@ const PartyTableRow = ({
             <td className="text-center">
 
                 <ActionDropdown
-                    onClick={() => { }}
+                    editLabel="Edit"
+                    deleteLabel="Delete"
+                    onEdit={() => onEdit(party)}
+                    onDelete={() => onDelete(party)}
                 />
 
             </td>

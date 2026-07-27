@@ -9,7 +9,8 @@ const CardHeader = ({
     buttonText,
     showSearch,
     showFilter,
-    showAddButton
+    showAddButton,
+    onAddClick
 }) => {
 
     return (
@@ -75,7 +76,11 @@ const CardHeader = ({
                     showAddButton && (
 
                         <button
+
                             className="btn add-party-btn"
+
+                            onClick={onAddClick}
+
                         >
 
                             <i className="bi bi-plus-lg me-2"></i>

@@ -1,20 +1,55 @@
-import React from "react";
+import Dropdown from "react-bootstrap/Dropdown";
+import { HiDotsVertical } from "react-icons/hi";
+import { FaPencilAlt } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 
 const ActionDropdown = ({
-    onClick
+    editLabel = "Edit",
+    deleteLabel = "Delete",
+    onEdit,
+    onDelete
 }) => {
 
     return (
 
-        <button
-            type="button"
-            className="btn btn-sm action-btn"
-            onClick={onClick}
-        >
+        <Dropdown onClick={(e) => e.stopPropagation()}>
 
-            <i className="bi bi-three-dots-vertical"></i>
+            <Dropdown.Toggle
+                variant="light"
+                size="sm"
+                className="action-dropdown border-0 shadow-none"
+            >
+                <HiDotsVertical />
 
-        </button>
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu
+                align="end"
+                className="shadow border-0 rounded-3"
+            >
+
+                <Dropdown.Item onClick={onEdit}>
+
+                    <FaPencilAlt style={{fontSize:'medium', marginRight:'3%', marginBottom:'3%'}}/>
+                    {editLabel}
+
+                </Dropdown.Item>
+
+                <Dropdown.Divider />
+
+                <Dropdown.Item
+                    onClick={onDelete}
+                    className="text-danger"
+                >
+
+                    <MdDelete  style={{marginRight:'3%', marginBottom:'3%'}}/>
+                    {deleteLabel}
+
+                </Dropdown.Item>
+
+            </Dropdown.Menu>
+
+        </Dropdown>
 
     );
 

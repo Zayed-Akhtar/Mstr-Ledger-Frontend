@@ -31,6 +31,7 @@ const ManagementCard = ({
     showAddButton = true,
 
     showPagination = true,
+    onAddClick
 }) => {
 
     const [search, setSearch] = useState("");
@@ -110,7 +111,8 @@ const ManagementCard = ({
                     showFilter={showFilter}
 
                     showAddButton={showAddButton}
-
+                    
+                    onAddClick={onAddClick}
                 />
 
                 <div className="table-wrapper flex-grow-1">
