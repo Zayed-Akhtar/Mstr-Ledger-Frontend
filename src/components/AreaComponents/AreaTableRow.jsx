@@ -2,7 +2,7 @@ import React from "react";
 import StatusBadge from "../common/StatusBadge";
 import ActionDropdown from "../common/ActionDropdown";
 
-const AreaTableRow = ({ area }) => {
+const AreaTableRow = ({ area, onDelete, onEdit }) => {
 
     return (
 
@@ -37,7 +37,8 @@ const AreaTableRow = ({ area }) => {
             <td className="text-center">
 
                 <ActionDropdown
-                    onClick={() => { }}
+                    onEdit={()=>onEdit(area)}
+                    onDelete={()=>onDelete(area)}
                 />
 
             </td>

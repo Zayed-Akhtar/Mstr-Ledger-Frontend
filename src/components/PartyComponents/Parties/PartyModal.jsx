@@ -17,7 +17,8 @@ const PartyModal = ({
     show,
     onHide,
     mode,
-    party
+    party,
+    onSave
 }) => {
 
     const [formData, setFormData] = useState(emptyParty);
@@ -93,21 +94,19 @@ const PartyModal = ({
         return Object.keys(newErrors).length === 0;
 
     };
-    const handleSave = () => {
+   const handleSave = () => {
 
-        if (!validateForm()) {
+    if (!validateForm()) {
 
-            return;
+        return;
 
-        }
+    }
 
-        console.log(mode);
+    onSave(formData);
 
-        console.log(formData);
+    handleClose();
 
-        handleClose();
-
-    };
+};
 
     return (
 

@@ -1,10 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import ManagementCard from "../common/ManagementCard";
 import AreaTableRow from "./AreaTableRow";
+import AreaModal from "./AreaModal";
+import ConfirmDeleteModal from "../common/ConfirmDeleteModal";
 
 const AreasCard = () => {
+    const [showAreaModal, setShowAreaModal] = useState(false);
 
-    const areas = [
+    const [editingArea, setEditingArea] = useState(null);
+
+    const [modalMode, setModalMode] = useState("create");
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    const [areaToDelete, setAreaToDelete] = useState(null);
+
+    const [areas, setAreas] = useState([
 
         {
             _id: 1,
@@ -46,8 +56,7 @@ const AreasCard = () => {
             active: true
         }
 
-    ];
-
+    ]);
     const columns = [
 
         {
@@ -77,37 +86,159 @@ const AreasCard = () => {
         }
 
     ];
+    const handleAddArea = () => {
+
+        setEditingArea(null);
+
+        setModalMode("create");
+
+        setShowAreaModal(true);
+
+    };
+
+    const handleEditArea = (area) => {
+
+        setEditingArea(area);
+
+        setModalMode("edit");
+
+        setShowAreaModal(true);
+
+    };
+
+    const handleDeleteArea = (area) => {
+
+        setAreaToDelete(area);
+
+        setShowDeleteModal(true);
+
+    };
+    const confirmDeleteArea = () => {
+
+        setAreas(prev =>
+
+            prev.filter(area =>
+
+                area._id !== areaToDelete._id
+
+            )
+
+        );
+
+        setShowDeleteModal(false);
+
+        setAreaToDelete(null);
+
+    };
+
+    const handleSaveArea = (areaData) => {
+
+        if (modalMode === "create") {
+
+            const newArea = {
+
+                ...areaData,
+
+                _id: Date.now(),
+
+                totalParties: 0
+
+            };
+
+            setAreas(prev => [
+
+                ...prev,
+
+                newArea
+
+            ]);
+
+        }
+        else {
+
+            setAreas(prev =>
+
+                prev.map(area =>
+
+                    area._id === editingArea._id
+
+                        ? {
+
+                            ...area,
+
+                            ...areaData
+
+                        }
+
+                        : area
+
+                )
+
+            );
+
+        }
+
+    };
+
+    const handleCloseAreaModal = () => {
+
+        setShowAreaModal(false);
+
+        setEditingArea(null);
+
+        setModalMode("create");
+
+    };
 
     return (
+        <>
+            <ManagementCard
+                title="Areas"
+                data={areas}
+                columns={columns}
+                searchField="name"
+                buttonText="Add Area"
+                pageSize={5}
+                onAddClick={handleAddArea}
+                renderRow={(area) => (
+                    <AreaTableRow
+                        key={area._id}
+                        area={area}
+                        onEdit={handleEditArea}
+                        onDelete={handleDeleteArea}
+                    />
+                )}
+            />
 
-        <ManagementCard
+            <AreaModal
+                show={showAreaModal}
+                onHide={handleCloseAreaModal}
+                mode={modalMode}
+                area={editingArea}
+                onSave={handleSaveArea}
+            />
+            <ConfirmDeleteModal
 
-            title="Areas"
+                show={showDeleteModal}
 
-            data={areas}
+                onHide={() => {
 
-            columns={columns}
+                    setShowDeleteModal(false);
 
-            searchField="name"
+                    setAreaToDelete(null);
 
-            buttonText="Add Area"
+                }}
 
-            pageSize={5}
+                title="Delete Area"
 
-            renderRow={(area) => (
+                message="Are you sure you want to delete"
 
-                <AreaTableRow
+                itemName={areaToDelete?.name}
 
-                    key={area._id}
+                onConfirm={confirmDeleteArea}
 
-                    area={area}
-
-                />
-
-            )}
-
-        />
-
+            />
+        </>
     );
 
 };

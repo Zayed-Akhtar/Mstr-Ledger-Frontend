@@ -12,8 +12,7 @@ const PartiesCard = ({
     const [partyToDelete, setPartyToDelete] = useState(null);
     const [showPartyModal, setShowPartyModal] = useState(false);
     const [modalMode, setModalMode] = useState("create");
-
-    const parties = [
+    const [parties, setParties] = useState([
 
         {
             _id: 1,
@@ -69,7 +68,7 @@ const PartiesCard = ({
             active: true
         }
 
-    ];
+    ]);
 
     const columns = [
 
@@ -134,17 +133,69 @@ const PartiesCard = ({
 
     };
 
-    const confirmDelete = () => {
+const confirmDelete = () => {
 
-        console.log("Deleting Party");
+    setParties(prev =>
 
-        console.log(partyToDelete);
+        prev.filter(
 
-        setShowDeleteModal(false);
+            p => p._id !== partyToDelete._id
 
-        setPartyToDelete(null);
+        )
 
-    };
+    );
+
+    setShowDeleteModal(false);
+
+};
+
+    const handleSaveParty = (partyData) => {
+
+    if (modalMode === "create") {
+
+        const newParty = {
+
+            ...partyData,
+
+            _id: Date.now()
+
+        };
+
+        setParties(prev => [
+
+            ...prev,
+
+            newParty
+
+        ]);
+
+    }
+    else {
+
+        setParties(prev =>
+
+            prev.map(p =>
+
+                p._id === editingParty._id
+
+                    ? {
+
+                        ...editingParty,
+
+                        ...partyData
+
+                    }
+
+                    : p
+
+            )
+
+        );
+
+    }
+
+};
+
     return (
 
         <><ManagementCard
@@ -190,7 +241,7 @@ const PartiesCard = ({
                 mode={modalMode}
 
                 party={selectedParty}
-
+                onSave={handleSaveParty}
             />
             <ConfirmDeleteModal
 
