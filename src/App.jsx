@@ -7,6 +7,7 @@ import Header from './components/Header';
 import Content from './components/Content';
 import Entry from './components/EntryComponents/Entry';
 import PartyManagementPage from './components/Pages/PartyManagementPage';
+import ToastNotification from './components/common/ToastNotification';
 
 function App() {
   const [selectedItem, setSelectedItem] = useState('Home')
@@ -18,6 +19,7 @@ function App() {
         <Sidebar selectedItem={selectedItem} onSelect={setSelectedItem} />
         {/* <Entry/> */}
         <PartyManagementPage/>
+        <ToastNotification />
       </div>
     </>
   )

@@ -3,6 +3,8 @@ import ManagementCard from "../../common/ManagementCard";
 import PartyTableRow from "./PartyTableRow";
 import PartyModal from "./PartyModal";
 import ConfirmDeleteModal from "../../common/ConfirmDeleteModal";
+import { useDispatch } from "react-redux";
+import { showToast } from "../../../features/toast/toastSlice";
 
 const PartiesCard = ({
     selectedParty,
@@ -12,6 +14,8 @@ const PartiesCard = ({
     const [partyToDelete, setPartyToDelete] = useState(null);
     const [showPartyModal, setShowPartyModal] = useState(false);
     const [modalMode, setModalMode] = useState("create");
+    const [editingParty, setEditingParty] = useState(null); 
+    const dispatch = useDispatch();
     const [parties, setParties] = useState([
 
         {
@@ -107,8 +111,7 @@ const PartiesCard = ({
 
     const handleAddParty = () => {
 
-        setSelectedParty(null);
-
+setEditingParty(null);
         setModalMode("create");
 
         setShowPartyModal(true);
@@ -117,8 +120,7 @@ const PartiesCard = ({
 
     const handleEditParty = (party) => {
 
-        setSelectedParty(party);
-
+setEditingParty(party);
         setModalMode("edit");
 
         setShowPartyModal(true);
@@ -133,68 +135,89 @@ const PartiesCard = ({
 
     };
 
-const confirmDelete = () => {
-
-    setParties(prev =>
-
-        prev.filter(
-
-            p => p._id !== partyToDelete._id
-
-        )
-
-    );
-
-    setShowDeleteModal(false);
-
-};
-
-    const handleSaveParty = (partyData) => {
-
-    if (modalMode === "create") {
-
-        const newParty = {
-
-            ...partyData,
-
-            _id: Date.now()
-
-        };
-
-        setParties(prev => [
-
-            ...prev,
-
-            newParty
-
-        ]);
-
-    }
-    else {
+    const confirmDelete = () => {
 
         setParties(prev =>
 
-            prev.map(p =>
+            prev.filter(
 
-                p._id === editingParty._id
-
-                    ? {
-
-                        ...editingParty,
-
-                        ...partyData
-
-                    }
-
-                    : p
+                p => p._id !== partyToDelete._id
 
             )
 
         );
+        dispatch(
+            showToast({
+                title: "Deleted",
+                message: "Party deleted successfully.",
+                variant: "danger"
+            })
+        );
 
-    }
+        setShowDeleteModal(false);
 
-};
+    };
+
+    const handleSaveParty = (partyData) => {
+
+        if (modalMode === "create") {
+
+            const newParty = {
+
+                ...partyData,
+
+                _id: Date.now()
+
+            };
+
+            setParties(prev => [
+
+                ...prev,
+
+                newParty
+
+            ]);
+            dispatch(
+                showToast({
+                    title: "Success",
+                    message: "Party added successfully.",
+                    variant: "success"
+                })
+            );
+
+        }
+        else {
+
+            setParties(prev =>
+
+                prev.map(p =>
+
+                    p._id === editingParty._id
+
+                        ? {
+
+                            ...editingParty,
+
+                            ...partyData
+
+                        }
+
+                        : p
+
+                )
+
+            );
+            dispatch(
+                showToast({
+                    title: "Success",
+                    message: "Party updated successfully.",
+                    variant: "info"
+                })
+            );
+
+        }
+
+    };
 
     return (
 
@@ -240,7 +263,7 @@ const confirmDelete = () => {
 
                 mode={modalMode}
 
-                party={selectedParty}
+                party={editingParty}
                 onSave={handleSaveParty}
             />
             <ConfirmDeleteModal

@@ -3,6 +3,8 @@ import ManagementCard from "../common/ManagementCard";
 import AreaTableRow from "./AreaTableRow";
 import AreaModal from "./AreaModal";
 import ConfirmDeleteModal from "../common/ConfirmDeleteModal";
+import { useDispatch } from "react-redux";
+import { showToast } from "../../features/toast/toastSlice";
 
 const AreasCard = () => {
     const [showAreaModal, setShowAreaModal] = useState(false);
@@ -13,6 +15,7 @@ const AreasCard = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     const [areaToDelete, setAreaToDelete] = useState(null);
+    const dispatch = useDispatch();
 
     const [areas, setAreas] = useState([
 
@@ -124,6 +127,13 @@ const AreasCard = () => {
             )
 
         );
+        dispatch(
+            showToast({
+                title: "Deleted",
+                message: "Area deleted successfully.",
+                variant: "danger"
+            })
+        );
 
         setShowDeleteModal(false);
 
@@ -152,6 +162,13 @@ const AreasCard = () => {
                 newArea
 
             ]);
+            dispatch(
+                showToast({
+                    title: "Success",
+                    message: "Area added successfully.",
+                    variant: "success"
+                })
+            );
 
         }
         else {
@@ -174,6 +191,13 @@ const AreasCard = () => {
 
                 )
 
+            );
+            dispatch(
+                showToast({
+                    title: "Success",
+                    message: "Area updated successfully.",
+                    variant: "info"
+                })
             );
 
         }
