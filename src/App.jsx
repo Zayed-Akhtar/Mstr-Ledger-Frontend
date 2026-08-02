@@ -4,10 +4,9 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import './App.css'
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
-import Content from './components/Content';
-import Entry from './components/EntryComponents/Entry';
 import PartyManagementPage from './components/Pages/PartyManagementPage';
 import ToastNotification from './components/common/ToastNotification';
+import Entry from './components/EntryComponents/Entry';
 
 function App() {
   const [selectedItem, setSelectedItem] = useState('Home')

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { VscSearchFuzzy } from "react-icons/vsc";
 import React, { useState, useEffect, useRef } from "react";
+
 function LookupField({
     className = "",
     id,
@@ -10,13 +11,21 @@ function LookupField({
     onChange,
     searchUrl,
     showDropdown = false,
-    onPartySelected
+    onPartySelected,
+    onSelect,
+    allowCustomValue = false,
+    customValueMessage = "New!",
+    autoSearchOnChange = false,
+    searchParam = "search",
+    renderResultItem,
+    searchMode = "party"
 }) {
 
     const [loading, setLoading] = useState(false);
     const [searchError, setSearchError] = useState("");
     const [results, setResults] = useState([]);
     const [showResults, setShowResults] = useState(false);
+    const [showCustomValueHint, setShowCustomValueHint] = useState(false);
     const lookupRef = useRef(null);
 
     useEffect(() => {
@@ -32,10 +41,7 @@ function LookupField({
         document.addEventListener("mousedown", handleOutsideClick);
 
         return () => {
-            document.removeEventListener(
-                "mousedown",
-                handleOutsideClick
-            );
+            document.removeEventListener("mousedown", handleOutsideClick);
         };
     }, []);
 
@@ -49,32 +55,92 @@ function LookupField({
         document.addEventListener("keydown", handleEscape);
 
         return () => {
-            document.removeEventListener(
-                "keydown",
-                handleEscape
-            );
+            document.removeEventListener("keydown", handleEscape);
         };
     }, []);
 
-    const handleSearch = async () => {
-
-        if (!value.trim())
+    useEffect(() => {
+        if (!autoSearchOnChange) {
             return;
+        }
+
+        const query = (value || "").trim();
+
+        if (!query) {
+            setResults([]);
+            setShowResults(false);
+            setShowCustomValueHint(false);
+            setSearchError("");
+            return;
+        }
+
+        const timeoutId = setTimeout(() => {
+            handleSearch();
+        }, 250);
+
+        return () => clearTimeout(timeoutId);
+    }, [value, autoSearchOnChange, searchUrl, searchMode, searchParam]);
+
+    const handleSelect = (item) => {
+        if (onSelect) {
+            onSelect(item);
+        } else if (onPartySelected) {
+            onPartySelected(item, item.transactions || []);
+        }
+
+        setShowResults(false);
+        setResults([]);
+        setSearchError("");
+        setShowCustomValueHint(false);
+    };
+
+    const handleSearch = async () => {
+        const query = (value || "").trim();
+
+        if (!query) {
+            setResults([]);
+            setShowResults(false);
+            setShowCustomValueHint(false);
+            return;
+        }
 
         setLoading(true);
         setSearchError("");
         setResults([]);
         setShowResults(false);
+        setShowCustomValueHint(false);
 
         try {
+            let response;
 
-            const response = await axios.get(
-                `${searchUrl}/${value.trim()}`
-            );
+            if (searchMode === "query") {
+                response = await axios.get(searchUrl, {
+                    params: {
+                        [searchParam]: query
+                    }
+                });
+            } else {
+                response = await axios.get(`${searchUrl}/${query}`);
+            }
 
-            const items = response.data.items;
+            const payload = response.data?.items ?? response.data?.data ?? response.data;
+            const items = Array.isArray(payload) ? payload : payload ? [payload] : [];
 
-            // Party Name API
+            if (searchMode === "query") {
+                if (items.length > 0) {
+                    setResults(items);
+                    setShowResults(Boolean(showDropdown));
+                    if (!showDropdown && items.length === 1) {
+                        handleSelect(items[0]);
+                    }
+                } else if (allowCustomValue) {
+                    setShowCustomValueHint(true);
+                } else {
+                    setSearchError("No results found");
+                }
+                return;
+            }
+
             if (Array.isArray(items)) {
 
                 if (items.length > 1 && showDropdown) {
@@ -84,10 +150,7 @@ function LookupField({
 
                 } else if (items.length === 1) {
 
-                    onPartySelected(
-                        items[0],
-                        items[0].transactions || []
-                    );
+                    handleSelect(items[0]);
 
                 } else {
 
@@ -96,13 +159,9 @@ function LookupField({
                 }
 
             }
-            // Party Code API
             else if (items) {
 
-                onPartySelected(
-                    items,
-                    items.transactions || []
-                );
+                handleSelect(items);
 
             } else {
 
@@ -111,20 +170,88 @@ function LookupField({
             }
 
         } catch (error) {
+            if (allowCustomValue && searchMode === "query") {
+                setShowCustomValueHint(true);
+                return;
+            }
 
             setSearchError(
                 error.response?.data?.message ||
                 error.message ||
                 "Search failed"
             );
-
         } finally {
-
             setLoading(false);
-
         }
-
     };
+
+    const renderDefaultResults = () => (
+        <div
+            style={{
+                position: "absolute",
+                top: "100%",
+                left: 0,
+                right: 0,
+                marginTop: "2px",
+                background: "#fff",
+                border: "1px solid #ced4da",
+                borderRadius: "0.375rem",
+                boxShadow: "0 .5rem 1rem rgba(0,0,0,.15)",
+                maxHeight: "320px",
+                overflowY: "auto",
+                zIndex: 1050,
+                width: "421px"
+            }}
+        >
+            <div className="d-flex justify-content-between align-items-center px-3 py-2 border-bottom bg-light">
+                <strong>Select Party</strong>
+                <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowResults(false)}
+                />
+            </div>
+
+            <table className="table table-hover mb-0">
+                <thead
+                    style={{
+                        position: "sticky",
+                        top: 0,
+                        background: "#f8f9fa",
+                        zIndex: 1
+                    }}
+                >
+                    <tr>
+                        <th>Party Name</th>
+                        <th>Party Code</th>
+                        <th>Area</th>
+                        <th>Phone Number</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {results.map((party) => {
+                        const areaName = typeof party.area === "string"
+                            ? party.area
+                            : party.area?.name || "-";
+
+                        return (
+                            <tr
+                                key={party._id || party.id || party.name}
+                                style={{ cursor: "pointer" }}
+                                onClick={() => handleSelect(party)}
+                            >
+                                <td>{party.name}</td>
+                                <td>{party.partyCode}</td>
+                                <td>{areaName}</td>
+                                <td>{party.phoneNumber}</td>
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
+        </div>
+    );
 
     return (
 
@@ -160,7 +287,7 @@ function LookupField({
                         type="button"
                         className="btn btn-outline-info"
                         onClick={handleSearch}
-                        disabled={loading || !value.trim()}
+                        disabled={loading || !(value || "").trim()}
                     >
                         <VscSearchFuzzy />
                     </button>
@@ -168,7 +295,6 @@ function LookupField({
                 </div>
 
                 {searchError && (
-
                     <div
                         className="text-danger"
                         style={{
@@ -178,14 +304,22 @@ function LookupField({
                     >
                         {searchError}
                     </div>
-
                 )}
 
-                {
-                    showDropdown &&
-                    showResults &&
-                    results.length > 0 && (
+                {allowCustomValue && showCustomValueHint && value && value.trim() && (
+                    <div
+                        className="text-success"
+                        style={{
+                            fontSize: ".85rem",
+                            marginTop: ".25rem"
+                        }}
+                    >
+                        {customValueMessage}
+                    </div>
+                )}
 
+                {showDropdown && showResults && results.length > 0 && (
+                    renderResultItem ? (
                         <div
                             style={{
                                 position: "absolute",
@@ -200,69 +334,24 @@ function LookupField({
                                 maxHeight: "320px",
                                 overflowY: "auto",
                                 zIndex: 1050,
-                                width:"421px"
+                                width: "421px"
                             }}
                         >
-                            {/* Header */}
-                            <div
-                                className="d-flex justify-content-between align-items-center px-3 py-2 border-bottom bg-light"
-                            >
-
-                                <strong>Select Party</strong>
-
-                                <button
-                                    type="button"
-                                    className="btn-close"
-                                    onClick={() => setShowResults(false)}
-                                />
-
+                            <div className="list-group list-group-flush">
+                                {results.map((item, index) => (
+                                    <button
+                                        type="button"
+                                        key={item._id || item.id || item.name || index}
+                                        className="list-group-item list-group-item-action text-start"
+                                        onClick={() => handleSelect(item)}
+                                    >
+                                        {renderResultItem(item)}
+                                    </button>
+                                ))}
                             </div>
-
-                            <table className="table table-hover mb-0">
-
-                                <thead
-                                    style={{
-                                        position: "sticky",
-                                        top: 0,
-                                        background: "#f8f9fa",
-                                        zIndex: 1
-                                    }}
-                                >
-                                    <tr>
-                                        <th>Party Name</th>
-                                        <th>Party Code</th>
-                                        <th>Area</th>
-                                        <th>Phone Number</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    {results.map((party) => (
-                                        <tr
-                                            key={party._id}
-                                            style={{ cursor: "pointer" }}
-                                            onClick={() => {
-                                                onPartySelected(
-                                                    party,
-                                                    party.transactions || []
-                                                );
-                                                setShowResults(false);
-                                            }}
-                                        >
-                                            <td>{party.name}</td>
-                                            <td>{party.partyCode}</td>
-                                            <td>{party.area}</td>
-                                            <td>{party.phoneNumber}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-
-                            </table>
-
                         </div>
-
-                    )
-                }
+                    ) : renderDefaultResults()
+                )}
 
             </div>
 

@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useEffect } from "react";
+
 import ManagementCard from "../../common/ManagementCard";
 import PartyTableRow from "./PartyTableRow";
 import PartyModal from "./PartyModal";
@@ -16,62 +19,13 @@ const PartiesCard = ({
     const [modalMode, setModalMode] = useState("create");
     const [editingParty, setEditingParty] = useState(null);
     const dispatch = useDispatch();
-    const [parties, setParties] = useState([
-
-        {
-            _id: 1,
-            name: "Malik Traders",
-            phoneNumber: "9876543210",
-            area: "Civil Lines",
-            partyCode:"P002",
-            active: true
-        },
-
-        {
-            _id: 2,
-            name: "Khan Enterprises",
-            phoneNumber: "9123456780",
-            area: "Main Market",
-            partyCode:"P004",
-            active: true
-        },
-
-        {
-            _id: 3,
-            name: "Modern Steel",
-            phoneNumber: "9871112222",
-            area: "Station Road",
-            partyCode:"P005",
-            active: false
-        },
-
-        {
-            _id: 4,
-            name: "ABC Hardware",
-            phoneNumber: "9876549999",
-            area: "Sector 19",
-            partyCode:"P006",
-            active: true
-        },
-
-        {
-            _id: 5,
-            name: "Rourkela Cement",
-            phoneNumber: "9876500000",
-            area: "Udit Nagar",
-            partyCode:"P007",
-            active: true
-        },
-
-        {
-            _id: 6,
-            name: "National Traders",
-            phoneNumber: "9999999999",
-            area: "Panposh",
-            partyCode:"P009",
-            active: true
-        }
-    ]);
+    const [parties, setParties] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalRecords, setTotalRecords] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [search, setSearch] = useState("");
+    const serverEndpoint = import.meta.env.VITE_SERVER_ENDPOINT;
+    const PAGE_SIZE = 5;
 
     const columns = [
 
@@ -83,7 +37,7 @@ const PartiesCard = ({
             key: "code",
             label: "Party Code"
         },
-        
+
         {
             key: "mobile",
             label: "Mobile Number"
@@ -107,6 +61,71 @@ const PartiesCard = ({
 
     ];
 
+    const normalizePartyPayload = (partyData) => ({
+        ...partyData,
+        partyCode: partyData.partyCode?.trim(),
+        name: partyData.name?.trim(),
+        email: partyData.email?.trim() || "",
+        phoneNumber: partyData.phoneNumber?.trim() || "",
+        fullAddress: partyData.fullAddress?.trim() || "",
+        area: typeof partyData.area === "string"
+            ? partyData.area.trim()
+            : partyData.area?.name || "",
+        creditLimit: Number(partyData.creditLimit || 0),
+        active: Boolean(partyData.active)
+    });
+
+    const fetchParties = async () => {
+
+        try {
+
+            const response = await axios.get(
+                `${serverEndpoint}/party/parties`,
+                {
+                    params: {
+                        page: currentPage,
+                        limit: PAGE_SIZE,
+                        search: search
+                    }
+                }
+            );
+
+            const data = response.data.items;
+
+            setParties(data.parties || []);
+
+            setTotalRecords(
+                data.pagination?.totalRecords || 0
+            );
+
+            setTotalPages(
+                data.pagination?.totalPages || 0
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Error fetching parties:",
+                error
+            );
+
+        }
+
+    };
+
+    useEffect(() => {
+
+        fetchParties();
+
+    }, [currentPage, search, serverEndpoint]);
+
+    const handleSearchChange = (value) => {
+
+        setSearch(value);
+
+        setCurrentPage(1);
+
+    };
     const handleAddParty = () => {
 
         setEditingParty(null);
@@ -133,126 +152,170 @@ const PartiesCard = ({
 
     };
 
-    const confirmDelete = () => {
+    const confirmDelete = async () => {
+        if (!partyToDelete?._id) return;
 
-        setParties(prev =>
-
-            prev.filter(
-
-                p => p._id !== partyToDelete._id
-
-            )
-
-        );
-        dispatch(
-            showToast({
-                title: "Deleted",
-                message: "Party deleted successfully.",
-                variant: "danger"
-            })
-        );
-
-        setShowDeleteModal(false);
-
-    };
-
-    const handleSaveParty = (partyData) => {
-
-        if (modalMode === "create") {
-
-            const newParty = {
-
-                ...partyData,
-
-                _id: Date.now()
-
-            };
-
-            setParties(prev => [
-
-                ...prev,
-
-                newParty
-
-            ]);
-            dispatch(
-                showToast({
-                    title: "Success",
-                    message: "Party added successfully.",
-                    variant: "success"
-                })
+        try {
+            await axios.delete(
+                `${serverEndpoint}/party/delete-party/${partyToDelete._id}`
             );
-
-        }
-        else {
 
             setParties(prev =>
-
-                prev.map(p =>
-
-                    p._id === editingParty._id
-
-                        ? {
-
-                            ...editingParty,
-
-                            ...partyData
-
-                        }
-
-                        : p
-
+                prev.filter(
+                    p => p._id !== partyToDelete._id
                 )
-
             );
+
+            if (selectedParty?._id === partyToDelete._id) {
+                setSelectedParty(null);
+            }
+
             dispatch(
                 showToast({
-                    title: "Success",
-                    message: "Party updated successfully.",
-                    variant: "info"
+                    title: "Deleted",
+                    message: "Party deleted successfully.",
+                    variant: "danger"
                 })
             );
 
+            setShowDeleteModal(false);
+            setPartyToDelete(null);
+            fetchParties();
+        } catch (error) {
+            console.error("Error deleting party:", error);
+            dispatch(
+                showToast({
+                    title: "Error",
+                    message: "Failed to delete party.",
+                    variant: "danger"
+                })
+            );
         }
+    };
 
+    const handleSaveParty = async (partyData) => {
+        const payload = normalizePartyPayload(partyData);
+
+        try {
+            if (modalMode === "create") {
+                const response = await axios.post(
+                    `${serverEndpoint}/party/add-party`,
+                    payload
+                );
+
+                const createdParty = response.data?.items;
+
+                setParties(prev => [
+                    createdParty,
+                    ...prev.filter(p => p._id !== createdParty?._id)
+                ]);
+
+                dispatch(
+                    showToast({
+                        title: "Success",
+                        message: "Party added successfully.",
+                        variant: "success"
+                    })
+                );
+            }
+            else {
+                const response = await axios.put(
+                    `${serverEndpoint}/party/update-party/${editingParty?._id}`,
+                    payload
+                );
+
+                const updatedParty = response.data?.items;
+
+                setParties(prev =>
+                    prev.map(p =>
+                        p._id === updatedParty?._id
+                            ? { ...p, ...updatedParty }
+                            : p
+                    )
+                );
+
+                if (selectedParty?._id === updatedParty?._id) {
+                    setSelectedParty(updatedParty);
+                }
+
+                dispatch(
+                    showToast({
+                        title: "Success",
+                        message: "Party updated successfully.",
+                        variant: "info"
+                    })
+                );
+            }
+
+            setShowPartyModal(false);
+            setEditingParty(null);
+            fetchParties();
+        } catch (error) {
+            console.error("Error saving party:", error);
+            dispatch(
+                showToast({
+                    title: "Error",
+                    message: modalMode === "create"
+                        ? "Failed to add party."
+                        : "Failed to update party.",
+                    variant: "danger"
+                })
+            );
+            throw error;
+        }
     };
 
     return (
 
-        <><ManagementCard
+        <>
+            <ManagementCard
 
-            title="Parties"
+                title="Parties"
 
-            data={parties}
+                data={parties}
 
-            columns={columns}
+                columns={columns}
 
-            searchField="name"
+                buttonText="Add Party"
 
-            buttonText="Add Party"
+                pageSize={PAGE_SIZE}
 
-            pageSize={5}
+                onAddClick={handleAddParty}
 
-            onAddClick={handleAddParty}
+                paginationMode="server"
 
-            renderRow={(party) => (
+                currentPage={currentPage}
 
-                <PartyTableRow
+                setCurrentPage={setCurrentPage}
 
-                    key={party._id}
+                totalRecords={totalRecords}
 
-                    party={party}
+                totalPages={totalPages}
 
-                    selectedParty={selectedParty}
+                search={search}
 
-                    setSelectedParty={setSelectedParty}
+                onSearchChange={handleSearchChange}
 
-                    onEdit={handleEditParty}
+                renderRow={(party) => (
 
-                    onDelete={handleDeleteParty}
-                />
+                    <PartyTableRow
 
-            )} />
+                        key={party._id}
+
+                        party={party}
+
+                        selectedParty={selectedParty}
+
+                        setSelectedParty={setSelectedParty}
+
+                        onEdit={handleEditParty}
+
+                        onDelete={handleDeleteParty}
+
+                    />
+
+                )}
+            />
             <PartyModal
 
                 show={showPartyModal}

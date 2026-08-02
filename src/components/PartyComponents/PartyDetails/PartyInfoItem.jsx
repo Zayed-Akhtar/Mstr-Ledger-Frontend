@@ -5,6 +5,12 @@ const PartyInfoItem = ({
     value
 }) => {
 
+    const displayValue = value == null || value === ""
+        ? "-"
+        : typeof value === "string" || typeof value === "number" || typeof value === "boolean"
+            ? value
+            : value.name || value.label || "-";
+
     return (
 
         <div className="d-flex align-items-center py-3 border-bottom">
@@ -18,7 +24,7 @@ const PartyInfoItem = ({
 
                 <div className="fw-semibold">
 
-                    {value || "-"}
+                    {displayValue}
 
                 </div>
 

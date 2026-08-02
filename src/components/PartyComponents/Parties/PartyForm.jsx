@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Form, Row, Col } from "react-bootstrap";
+import LookupField from "../../common/LookupField";
 
 const PartyForm = ({ formData, setFormData, errors, setErrors }) => {
+    const serverEndpoint = import.meta.env.VITE_SERVER_ENDPOINT;
 
     const handleChange = (e) => {
 
@@ -31,6 +33,16 @@ const PartyForm = ({ formData, setFormData, errors, setErrors }) => {
         }
 
     };
+
+    const handleAreaSelect = (area) => {
+        const areaName = area?.name || area?.description || "";
+
+        setFormData(prev => ({
+            ...prev,
+            area: areaName
+        }));
+    };
+
     return (
 
         <Form>
@@ -150,33 +162,29 @@ const PartyForm = ({ formData, setFormData, errors, setErrors }) => {
                 </Col>
 
                 <Col md={6}>
-
-                    <Form.Group>
-
-                        <Form.Label>
-
-                            Area
-
-                        </Form.Label>
-
-                        <Form.Select
-                            name="area"
-                            value={formData.area}
-                            onChange={handleChange}
-                        >
-
-                            <option value="">Select Area</option>
-
-                            <option>Civil Lines</option>
-
-                            <option>Main Market</option>
-
-                            <option>Sector 19</option>
-
-                        </Form.Select>
-
-                    </Form.Group>
-
+                    <LookupField
+                        className=""
+                        id="area"
+                        label="Area"
+                        placeholder="Search or enter area..."
+                        value={formData.area}
+                        onChange={(value) => setFormData(prev => ({ ...prev, area: value }))}
+                        searchUrl={`${serverEndpoint}/area/search`}
+                        showDropdown={true}
+                        autoSearchOnChange={true}
+                        allowCustomValue={true}
+                        customValueMessage="New!"
+                        onSelect={handleAreaSelect}
+                        searchMode="query"
+                        renderResultItem={(area) => (
+                            <div className="d-flex flex-column">
+                                <strong>{area.name}</strong>
+                                {area.description && (
+                                    <small className="text-muted">{area.description}</small>
+                                )}
+                            </div>
+                        )}
+                    />
                 </Col>
 
                 <Col md={4}>

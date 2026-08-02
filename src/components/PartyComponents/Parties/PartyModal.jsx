@@ -88,7 +88,7 @@ const PartyModal = ({
         return Object.keys(newErrors).length === 0;
 
     };
-   const handleSave = () => {
+   const handleSave = async () => {
 
     if (!validateForm()) {
 
@@ -96,9 +96,12 @@ const PartyModal = ({
 
     }
 
-    onSave(formData);
-
-    handleClose();
+    try {
+        await onSave(formData);
+        handleClose();
+    } catch (error) {
+        // keep modal open when backend save fails
+    }
 
 };
 

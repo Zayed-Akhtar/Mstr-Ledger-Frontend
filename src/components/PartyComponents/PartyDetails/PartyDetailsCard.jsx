@@ -32,6 +32,10 @@ const PartyDetailsCard = ({ party }) => {
 
     }
 
+    const areaName = typeof party.area === "string"
+        ? party.area
+        : party.area?.name || "-";
+
     return (
 
         <div className="card border-0 shadow-sm rounded-4 h-100" style={{overflowY:'auto', position:'relative'}}>
@@ -73,13 +77,7 @@ const PartyDetailsCard = ({ party }) => {
                 <PartyInfoItem
                     icon="bi-geo-alt"
                     label="Area"
-                    value={party.area}
-                />
-
-                <PartyInfoItem
-                    icon="bi-receipt"
-                    label="GST Number"
-                    value={party.gst}
+                    value={areaName}
                 />
 
                 <PartyInfoItem
@@ -88,7 +86,7 @@ const PartyDetailsCard = ({ party }) => {
                     value={party.fullAddress}
                 />
 
-                <PartyStatistics />
+                <PartyStatistics party={party} />
 
                 <div className="d-grid gap-2 mt-4">
 

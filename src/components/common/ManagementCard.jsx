@@ -16,26 +16,88 @@ const ManagementCard = ({
     columns,
     renderRow,
     buttonText,
+
+    // Client-side search
     searchField,
+
     pageSize = 5,
+
     showSearch = true,
     showFilter = true,
     showAddButton = true,
     showPagination = true,
-    onAddClick
+
+    onAddClick,
+
+    // Pagination mode
+    paginationMode = "client",
+
+    // Server-side pagination props
+    currentPage: serverCurrentPage,
+    setCurrentPage: setServerCurrentPage,
+    totalRecords: serverTotalRecords,
+    totalPages: serverTotalPages,
+
+    // Server-side search props
+    search: serverSearch,
+    onSearchChange: serverOnSearchChange
+
 }) => {
 
-    const [search, setSearch] = useState("");
+    /*
+     * Client-side state
+     *
+     * AreasCard will continue using these.
+     */
+    const [localSearch, setLocalSearch] = useState("");
 
-    const [currentPage, setCurrentPage] = useState(1);
+    const [localCurrentPage, setLocalCurrentPage] = useState(1);
 
-    /**
-     * Filter Data
+
+    /*
+     * Determine pagination mode
+     */
+
+    const isServerMode =
+        paginationMode === "server";
+
+
+    /*
+     * Decide which search value to use
+     */
+
+    const search = isServerMode
+        ? serverSearch ?? ""
+        : localSearch;
+
+
+    /*
+     * Decide which page value to use
+     */
+
+    const currentPage = isServerMode
+        ? serverCurrentPage ?? 1
+        : localCurrentPage;
+
+
+    /*
+     * CLIENT-SIDE FILTERING
+     *
+     * This is only used by components such as AreasCard.
+     *
+     * PartiesCard uses server-side search, so we simply
+     * return the data received from the backend.
      */
 
     const filteredData = useMemo(() => {
 
-        if (!search.trim()) {
+        if (isServerMode) {
+
+            return data;
+
+        }
+
+        if (!localSearch.trim()) {
 
             return data;
 
@@ -45,39 +107,133 @@ const ManagementCard = ({
 
             String(item[searchField] || "")
                 .toLowerCase()
-                .includes(search.toLowerCase())
+                .includes(
+                    localSearch.toLowerCase()
+                )
 
         );
 
-    }, [data, search, searchField]);
+    }, [
+        data,
+        localSearch,
+        searchField,
+        isServerMode
+    ]);
 
-    /**
-     * Reset page after searching
+
+    /*
+     * Reset page when CLIENT-SIDE search changes.
+     *
+     * Server-side page reset will be handled by
+     * PartiesCard.
      */
 
     useEffect(() => {
 
-        setCurrentPage(1);
+        if (!isServerMode) {
 
-    }, [search]);
+            setLocalCurrentPage(1);
 
-    /**
-     * Pagination
+        }
+
+    }, [localSearch, isServerMode]);
+
+
+    /*
+     * CLIENT-SIDE pagination calculations
      */
 
-    const totalPages = Math.ceil(
-        filteredData.length / pageSize
-    );
+    const clientTotalRecords =
+        filteredData.length;
 
-    const startIndex = (currentPage - 1) * pageSize;
+    const clientTotalPages =
+        Math.ceil(
+            clientTotalRecords / pageSize
+        );
 
-    const currentItems = filteredData.slice(
 
-        startIndex,
+    /*
+     * Decide total records/pages depending
+     * on pagination mode.
+     */
 
-        startIndex + pageSize
+    const totalRecords = isServerMode
+        ? serverTotalRecords ?? 0
+        : clientTotalRecords;
 
-    );
+    const totalPages = isServerMode
+        ? serverTotalPages ?? 0
+        : clientTotalPages;
+
+
+    /*
+     * CLIENT-SIDE pagination
+     */
+
+    const startIndex =
+        (currentPage - 1) * pageSize;
+
+
+    /*
+     * IMPORTANT
+     *
+     * Server mode:
+     * Backend already returned only 5 records.
+     * DO NOT slice again.
+     *
+     * Client mode:
+     * Slice the full array normally.
+     */
+
+    const currentItems = isServerMode
+
+        ? data
+
+        : filteredData.slice(
+            startIndex,
+            startIndex + pageSize
+        );
+
+
+    /*
+     * Search handler
+     */
+
+    const handleSearchChange = (value) => {
+
+        if (isServerMode) {
+
+            serverOnSearchChange?.(value);
+
+        }
+        else {
+
+            setLocalSearch(value);
+
+        }
+
+    };
+
+
+    /*
+     * Pagination handler
+     */
+
+    const handlePageChange = (page) => {
+
+        if (isServerMode) {
+
+            setServerCurrentPage?.(page);
+
+        }
+        else {
+
+            setLocalCurrentPage(page);
+
+        }
+
+    };
+
 
     return (
 
@@ -89,11 +245,11 @@ const ManagementCard = ({
 
                     title={title}
 
-                    totalRecords={filteredData.length}
+                    totalRecords={totalRecords}
 
                     search={search}
 
-                    onSearchChange={setSearch}
+                    onSearchChange={handleSearchChange}
 
                     buttonText={buttonText}
 
@@ -104,7 +260,9 @@ const ManagementCard = ({
                     showAddButton={showAddButton}
 
                     onAddClick={onAddClick}
+
                 />
+
 
                 <div className="table-wrapper flex-grow-1">
 
@@ -112,7 +270,9 @@ const ManagementCard = ({
 
                         columns={columns}
 
-                        isEmpty={currentItems.length === 0}
+                        isEmpty={
+                            currentItems.length === 0
+                        }
 
                         emptyComponent={
 
@@ -142,7 +302,9 @@ const ManagementCard = ({
                                         : buttonText
                                 }
 
-                                onButtonClick={onAddClick}
+                                onButtonClick={
+                                    onAddClick
+                                }
 
                             />
 
@@ -151,14 +313,15 @@ const ManagementCard = ({
                     >
 
                         {
-
-                            currentItems.map(renderRow)
-
+                            currentItems.map(
+                                renderRow
+                            )
                         }
 
                     </DataTable>
 
                 </div>
+
 
                 {
 
@@ -166,15 +329,25 @@ const ManagementCard = ({
 
                         <PaginationBar
 
-                            currentPage={currentPage}
+                            currentPage={
+                                currentPage
+                            }
 
-                            setCurrentPage={setCurrentPage}
+                            setCurrentPage={
+                                handlePageChange
+                            }
 
-                            pageSize={pageSize}
+                            pageSize={
+                                pageSize
+                            }
 
-                            totalPages={totalPages}
+                            totalPages={
+                                totalPages
+                            }
 
-                            totalRecords={filteredData.length}
+                            totalRecords={
+                                totalRecords
+                            }
 
                         />
 

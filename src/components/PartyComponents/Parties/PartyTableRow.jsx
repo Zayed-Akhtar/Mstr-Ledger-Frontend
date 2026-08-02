@@ -10,6 +10,10 @@ const PartyTableRow = ({
     onDelete
 }) => {
 
+    const areaName = typeof party.area === "string"
+        ? party.area
+        : party.area?.name || "-";
+
     return (
 
         <tr
@@ -30,7 +34,7 @@ const PartyTableRow = ({
 
             <td>{party.phoneNumber}</td>
 
-            <td>{party.area}</td>
+            <td>{areaName}</td>
 
             <td>
                 <StatusBadge
