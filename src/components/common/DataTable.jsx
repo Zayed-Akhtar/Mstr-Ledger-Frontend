@@ -2,7 +2,9 @@ import React from "react";
 
 const DataTable = ({
     columns,
-    children
+    children,
+    isEmpty = false,
+    emptyComponent = null
 }) => {
 
     return (
@@ -34,11 +36,34 @@ const DataTable = ({
 
             </thead>
 
-            <tbody>
+<tbody>
 
-                {children}
+    {
 
-            </tbody>
+        isEmpty
+
+            ? (
+
+                <tr>
+
+                    <td
+                        colSpan={columns.length}
+                        className="text-center py-5"
+                    >
+
+                        {emptyComponent}
+
+                    </td>
+
+                </tr>
+
+            )
+
+            : children
+
+    }
+
+</tbody>
 
         </table>
 

@@ -3,13 +3,13 @@ import { Modal, Button } from "react-bootstrap";
 import PartyForm from "./PartyForm";
 
 const emptyParty = {
+    partyCode:"",
     name: "",
-    mobileNumber: "",
     email: "",
     area: "",
-    openingBalance: "",
-    balanceType: "Debit",
-    address: "",
+    creditLimit: "",
+    phoneNumber: "",
+    fullAddress:"",
     active: true
 };
 
@@ -59,13 +59,17 @@ const PartyModal = ({
             newErrors.name = "Party Name is required.";
 
         }
+        if (!formData.partyCode.trim()) {
 
+            newErrors.partyCode = "Party Code is required.";
+
+        }
         if (
-            formData.mobileNumber &&
-            !/^[0-9]{10}$/.test(formData.mobileNumber)
+            formData.phoneNumber &&
+            !/^[0-9]{10}$/.test(formData.phoneNumber)
         ) {
 
-            newErrors.mobileNumber =
+            newErrors.phoneNumber =
                 "Mobile Number must contain exactly 10 digits.";
 
         }
@@ -76,16 +80,6 @@ const PartyModal = ({
         ) {
 
             newErrors.email = "Please enter a valid email address.";
-
-        }
-
-        if (
-            formData.openingBalance &&
-            Number(formData.openingBalance) < 0
-        ) {
-
-            newErrors.openingBalance =
-                "Opening Balance cannot be negative.";
 
         }
 

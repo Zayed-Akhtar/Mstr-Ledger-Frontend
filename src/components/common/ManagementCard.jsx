@@ -7,29 +7,20 @@ import React, {
 import CardHeader from "./CardHeader";
 import DataTable from "./DataTable";
 import PaginationBar from "./PaginationBar";
+import EmptyState from "./EmptyState";
 
 const ManagementCard = ({
 
     title,
-
     data,
-
     columns,
-
     renderRow,
-
     buttonText,
-
     searchField,
-
     pageSize = 5,
-
     showSearch = true,
-
     showFilter = true,
-
     showAddButton = true,
-
     showPagination = true,
     onAddClick
 }) => {
@@ -111,7 +102,7 @@ const ManagementCard = ({
                     showFilter={showFilter}
 
                     showAddButton={showAddButton}
-                    
+
                     onAddClick={onAddClick}
                 />
 
@@ -121,11 +112,48 @@ const ManagementCard = ({
 
                         columns={columns}
 
+                        isEmpty={currentItems.length === 0}
+
+                        emptyComponent={
+
+                            <EmptyState
+
+                                icon={
+                                    search
+                                        ? "bi bi-search"
+                                        : "bi bi-folder2-open"
+                                }
+
+                                title={
+                                    search
+                                        ? "No Matching Records"
+                                        : "No Records Found"
+                                }
+
+                                message={
+                                    search
+                                        ? "Try another search keyword."
+                                        : `Click "${buttonText}" to create your first record.`
+                                }
+
+                                buttonText={
+                                    search
+                                        ? null
+                                        : buttonText
+                                }
+
+                                onButtonClick={onAddClick}
+
+                            />
+
+                        }
+
                     >
 
                         {
 
-                            currentItems.map((item) => renderRow(item))
+                            currentItems.map(renderRow)
+
                         }
 
                     </DataTable>

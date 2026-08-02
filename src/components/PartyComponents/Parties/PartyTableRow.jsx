@@ -26,12 +26,11 @@ const PartyTableRow = ({
                 {party.name}
 
             </td>
+            <td>{party.partyCode}</td>
 
-            <td>{party.mobileNumber}</td>
+            <td>{party.phoneNumber}</td>
 
             <td>{party.area}</td>
-
-            <td>{party.email}</td>
 
             <td>
                 <StatusBadge

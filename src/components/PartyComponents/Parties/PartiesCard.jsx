@@ -14,64 +14,63 @@ const PartiesCard = ({
     const [partyToDelete, setPartyToDelete] = useState(null);
     const [showPartyModal, setShowPartyModal] = useState(false);
     const [modalMode, setModalMode] = useState("create");
-    const [editingParty, setEditingParty] = useState(null); 
+    const [editingParty, setEditingParty] = useState(null);
     const dispatch = useDispatch();
     const [parties, setParties] = useState([
 
         {
             _id: 1,
             name: "Malik Traders",
-            mobileNumber: "9876543210",
+            phoneNumber: "9876543210",
             area: "Civil Lines",
-            email: "malik@gmail.com",
+            partyCode:"P002",
             active: true
         },
 
         {
             _id: 2,
             name: "Khan Enterprises",
-            mobileNumber: "9123456780",
+            phoneNumber: "9123456780",
             area: "Main Market",
-            email: "khan@gmail.com",
+            partyCode:"P004",
             active: true
         },
 
         {
             _id: 3,
             name: "Modern Steel",
-            mobileNumber: "9871112222",
+            phoneNumber: "9871112222",
             area: "Station Road",
-            email: "steel@gmail.com",
+            partyCode:"P005",
             active: false
         },
 
         {
             _id: 4,
             name: "ABC Hardware",
-            mobileNumber: "9876549999",
+            phoneNumber: "9876549999",
             area: "Sector 19",
-            email: "abc@gmail.com",
+            partyCode:"P006",
             active: true
         },
 
         {
             _id: 5,
             name: "Rourkela Cement",
-            mobileNumber: "9876500000",
+            phoneNumber: "9876500000",
             area: "Udit Nagar",
-            email: "cement@gmail.com",
+            partyCode:"P007",
             active: true
         },
 
         {
             _id: 6,
             name: "National Traders",
-            mobileNumber: "9999999999",
+            phoneNumber: "9999999999",
             area: "Panposh",
-            email: "national@gmail.com",
+            partyCode:"P009",
             active: true
         }
-
     ]);
 
     const columns = [
@@ -80,7 +79,11 @@ const PartiesCard = ({
             key: "name",
             label: "Party Name"
         },
-
+        {
+            key: "code",
+            label: "Party Code"
+        },
+        
         {
             key: "mobile",
             label: "Mobile Number"
@@ -89,11 +92,6 @@ const PartiesCard = ({
         {
             key: "area",
             label: "Area"
-        },
-
-        {
-            key: "email",
-            label: "Email"
         },
 
         {
@@ -111,7 +109,7 @@ const PartiesCard = ({
 
     const handleAddParty = () => {
 
-setEditingParty(null);
+        setEditingParty(null);
         setModalMode("create");
 
         setShowPartyModal(true);
@@ -120,7 +118,7 @@ setEditingParty(null);
 
     const handleEditParty = (party) => {
 
-setEditingParty(party);
+        setEditingParty(party);
         setModalMode("edit");
 
         setShowPartyModal(true);

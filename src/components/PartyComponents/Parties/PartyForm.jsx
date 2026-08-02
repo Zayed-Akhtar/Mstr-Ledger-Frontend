@@ -3,40 +3,67 @@ import { Form, Row, Col } from "react-bootstrap";
 
 const PartyForm = ({ formData, setFormData, errors, setErrors }) => {
 
-  const handleChange = (e) => {
+    const handleChange = (e) => {
 
-    const { name, value, checked, type } = e.target;
+        const { name, value, checked, type } = e.target;
 
-    setFormData(prev => ({
-
-        ...prev,
-
-        [name]:
-            type === "checkbox"
-                ? checked
-                : value
-
-    }));
-
-    if (errors[name]) {
-
-        setErrors(prev => ({
+        setFormData(prev => ({
 
             ...prev,
 
-            [name]: ""
+            [name]:
+                type === "checkbox"
+                    ? checked
+                    : value
 
         }));
 
-    }
+        if (errors[name]) {
 
-};
+            setErrors(prev => ({
+
+                ...prev,
+
+                [name]: ""
+
+            }));
+
+        }
+
+    };
     return (
 
         <Form>
 
             <Row className="g-3">
 
+                <Col md={6}>
+
+                    <Form.Group>
+
+                        <Form.Label>
+
+                            Party Code <span className="text-danger">*</span>
+
+                        </Form.Label>
+
+                        <Form.Control
+                            name="partyCode"
+                            value={formData.partyCode}
+                            onChange={handleChange}
+                            placeholder="Enter Party Code"
+                            isInvalid={!!errors.partyCode}
+                        />
+
+                        <Form.Control.Feedback type="invalid">
+
+                            {errors.partyCode}
+
+                        </Form.Control.Feedback>
+
+                    </Form.Group>
+
+                </Col>
                 <Col md={6}>
 
                     <Form.Group>
@@ -76,16 +103,16 @@ const PartyForm = ({ formData, setFormData, errors, setErrors }) => {
                         </Form.Label>
 
                         <Form.Control
-                            name="mobileNumber"
-                            value={formData.mobileNumber}
+                            name="phoneNumber"
+                            value={formData.phoneNumber}
                             onChange={handleChange}
                             placeholder="9876543210"
-                            isInvalid={!!errors.mobileNumber}
+                            isInvalid={!!errors.phoneNumber}
                         />
 
                         <Form.Control.Feedback type="invalid">
 
-                            {errors.mobileNumber}
+                            {errors.phoneNumber}
 
                         </Form.Control.Feedback>
 
@@ -152,55 +179,29 @@ const PartyForm = ({ formData, setFormData, errors, setErrors }) => {
 
                 </Col>
 
-                <Col md={6}>
+                <Col md={4}>
 
                     <Form.Group>
 
                         <Form.Label>
 
-                            Opening Balance
+                            Credit Limit / days
 
                         </Form.Label>
 
                         <Form.Control
                             type="number"
-                            name="openingBalance"
-                            value={formData.openingBalance}
+                            name="creditLimit"
+                            value={formData.creditLimit}
                             onChange={handleChange}
-                            isInvalid={!!errors.openingBalance}
+                            isInvalid={!!errors.creditLimit}
                         />
 
                         <Form.Control.Feedback type="invalid">
 
-                            {errors.openingBalance}
+                            {errors.creditLimit}
 
                         </Form.Control.Feedback>
-
-                    </Form.Group>
-
-                </Col>
-
-                <Col md={6}>
-
-                    <Form.Group>
-
-                        <Form.Label>
-
-                            Balance Type
-
-                        </Form.Label>
-
-                        <Form.Select
-                            name="balanceType"
-                            value={formData.balanceType}
-                            onChange={handleChange}
-                        >
-
-                            <option>Debit</option>
-
-                            <option>Credit</option>
-
-                        </Form.Select>
 
                     </Form.Group>
 
@@ -219,8 +220,8 @@ const PartyForm = ({ formData, setFormData, errors, setErrors }) => {
                         <Form.Control
                             as="textarea"
                             rows={3}
-                            name="address"
-                            value={formData.address}
+                            name="fullAddress"
+                            value={formData.fullAddress}
                             onChange={handleChange}
                             placeholder="Enter address..."
                         />

@@ -61,7 +61,7 @@ const PartyDetailsCard = ({ party }) => {
                 <PartyInfoItem
                     icon="bi-telephone"
                     label="Mobile"
-                    value={party.mobileNumber}
+                    value={party.phoneNumber}
                 />
 
                 <PartyInfoItem
@@ -85,7 +85,7 @@ const PartyDetailsCard = ({ party }) => {
                 <PartyInfoItem
                     icon="bi-house"
                     label="Address"
-                    value={party.address}
+                    value={party.fullAddress}
                 />
 
                 <PartyStatistics />
