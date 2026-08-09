@@ -25,8 +25,7 @@ const PartyModal = ({
     const [errors, setErrors] = useState({});
     useEffect(() => {
 
-        if (mode === "edit" && party) {
-
+        if (mode === "edit" && party) {            
             setFormData({
                 ...emptyParty,
                 ...party

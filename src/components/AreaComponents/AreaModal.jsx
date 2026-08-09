@@ -83,11 +83,14 @@ const AreaModal = ({
 
         setSaving(true);
 
-        onSave(formData);
-
-        setSaving(false);
-
-        handleClose();
+        try {
+            await onSave(formData);
+            handleClose();
+        } catch (error) {
+            // keep modal open if server rejected the save
+        } finally {
+            setSaving(false);
+        }
 
     };
 

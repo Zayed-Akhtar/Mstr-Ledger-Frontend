@@ -218,7 +218,7 @@ const PartiesCard = ({
                     })
                 );
             }
-            else {
+            else {                
                 const response = await axios.put(
                     `${serverEndpoint}/party/update-party/${editingParty?._id}`,
                     payload

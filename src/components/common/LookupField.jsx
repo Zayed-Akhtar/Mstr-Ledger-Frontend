@@ -21,6 +21,13 @@ function LookupField({
     searchMode = "party"
 }) {
 
+    const safeValue = typeof value === "string"
+        ? value
+        : value == null
+            ? ""
+            : String(value);
+console.log('this is lookup value', value);
+
     const [loading, setLoading] = useState(false);
     const [searchError, setSearchError] = useState("");
     const [results, setResults] = useState([]);
@@ -64,7 +71,7 @@ function LookupField({
             return;
         }
 
-        const query = (value || "").trim();
+        const query = safeValue.trim();
 
         if (!query) {
             setResults([]);
@@ -79,7 +86,7 @@ function LookupField({
         }, 250);
 
         return () => clearTimeout(timeoutId);
-    }, [value, autoSearchOnChange, searchUrl, searchMode, searchParam]);
+    }, [safeValue, autoSearchOnChange, searchUrl, searchMode, searchParam]);
 
     const handleSelect = (item) => {
         if (onSelect) {
@@ -95,7 +102,7 @@ function LookupField({
     };
 
     const handleSearch = async () => {
-        const query = (value || "").trim();
+        const query = safeValue.trim();
 
         if (!query) {
             setResults([]);
@@ -279,7 +286,7 @@ function LookupField({
                         type="text"
                         className="form-control"
                         placeholder={placeholder}
-                        value={value}
+                        value={safeValue}
                         onChange={(e) => onChange(e.target.value)}
                     />
 
@@ -287,7 +294,7 @@ function LookupField({
                         type="button"
                         className="btn btn-outline-info"
                         onClick={handleSearch}
-                        disabled={loading || !(value || "").trim()}
+                        disabled={loading || !safeValue.trim()}
                     >
                         <VscSearchFuzzy />
                     </button>
@@ -306,7 +313,7 @@ function LookupField({
                     </div>
                 )}
 
-                {allowCustomValue && showCustomValueHint && value && value.trim() && (
+                {allowCustomValue && showCustomValueHint && safeValue && safeValue.trim() && (
                     <div
                         className="text-success"
                         style={{

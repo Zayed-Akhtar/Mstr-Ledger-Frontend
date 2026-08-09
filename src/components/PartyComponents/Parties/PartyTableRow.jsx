@@ -9,7 +9,7 @@ const PartyTableRow = ({
     onEdit,
     onDelete
 }) => {
-
+    
     const areaName = typeof party.area === "string"
         ? party.area
         : party.area?.name || "-";

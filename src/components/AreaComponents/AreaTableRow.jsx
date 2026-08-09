@@ -3,6 +3,7 @@ import StatusBadge from "../common/StatusBadge";
 import ActionDropdown from "../common/ActionDropdown";
 
 const AreaTableRow = ({ area, onDelete, onEdit }) => {
+    const totalParties = area.parties ?? 0;
 
     return (
 
@@ -22,7 +23,7 @@ const AreaTableRow = ({ area, onDelete, onEdit }) => {
 
             <td>
 
-                {area.totalParties}
+                {totalParties}
 
             </td>
 

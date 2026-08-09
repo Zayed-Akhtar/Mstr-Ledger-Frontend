@@ -4,6 +4,9 @@ import LookupField from "../../common/LookupField";
 
 const PartyForm = ({ formData, setFormData, errors, setErrors }) => {
     const serverEndpoint = import.meta.env.VITE_SERVER_ENDPOINT;
+    const areaValue = typeof formData.area === "string"
+        ? formData.area
+        : formData.area?.name || "";
 
     const handleChange = (e) => {
 
@@ -167,7 +170,7 @@ const PartyForm = ({ formData, setFormData, errors, setErrors }) => {
                         id="area"
                         label="Area"
                         placeholder="Search or enter area..."
-                        value={formData.area}
+                        value={areaValue}
                         onChange={(value) => setFormData(prev => ({ ...prev, area: value }))}
                         searchUrl={`${serverEndpoint}/area/search`}
                         showDropdown={true}
