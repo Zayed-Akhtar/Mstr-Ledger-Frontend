@@ -1,7 +1,8 @@
+import React from "react";
 import PartyInfoItem from "./PartyInfoItem";
 import PartyStatistics from "./PartyStatistics";
 
-const PartyDetailsCard = ({ party }) => {
+const PartyDetailsCard = ({ party, onEditParty, onViewTransactions }) => {
 
     if (!party) {
 
@@ -90,16 +91,18 @@ const PartyDetailsCard = ({ party }) => {
 
                 <div className="d-grid gap-2 mt-4">
 
-                    <button className="btn btn-primary">
-
+                    <button
+                        className="btn btn-primary"
+                        onClick={() => onEditParty?.(party)}
+                    >
                         Edit Party
-
                     </button>
 
-                    <button className="btn btn-outline-primary">
-
+                    <button
+                        className="btn btn-outline-primary"
+                        onClick={() => onViewTransactions?.(party)}
+                    >
                         View Transactions
-
                     </button>
 
                 </div>

@@ -26,8 +26,6 @@ function LookupField({
         : value == null
             ? ""
             : String(value);
-console.log('this is lookup value', value);
-
     const [loading, setLoading] = useState(false);
     const [searchError, setSearchError] = useState("");
     const [results, setResults] = useState([]);

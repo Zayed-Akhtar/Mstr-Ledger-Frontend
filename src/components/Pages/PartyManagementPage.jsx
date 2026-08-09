@@ -1,11 +1,50 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import PartiesCard from "../PartyComponents/Parties/PartiesCard";
 import PartyDetailsCard from "../PartyComponents/PartyDetails/PartyDetailsCard";
 import AreasCard from "../AreaComponents/AreasCard";
 
 const PartyManagementPage = () => {
-
     const [selectedParty, setSelectedParty] = useState(null);
+    const [partyModalState, setPartyModalState] = useState({
+        show: false,
+        mode: "create",
+        party: null
+    });
+    const navigate = useNavigate();
+    const serverEndpoint = import.meta.env.VITE_SERVER_ENDPOINT;
+
+    const handleViewTransactions = async (party) => {
+        if (!party?._id) return;
+
+        try {
+            const response = await axios.get(
+                `${serverEndpoint}/party/party-by-code/${party.partyCode}`
+            );
+
+            const fetchedPartyWithTxn = response.data?.items ?? response.data?.data ?? response.data ?? {};
+            const transactions = Array.isArray(fetchedPartyWithTxn.transactions)
+                    ? fetchedPartyWithTxn.transactions
+                    : [];
+            console.log('transactions from party management', transactions);
+            
+            navigate('/Entry', {
+                state: {
+                    fetchedPartyWithTxn,
+                    transactions
+                }
+            });
+        } catch (error) {
+            console.error('Failed to load party transactions:', error);
+            navigate('/Entry', {
+                state: {
+                    party,
+                    transactions: party.transactions || []
+                }
+            });
+        }
+    };
 
     return (
 
@@ -18,6 +57,8 @@ const PartyManagementPage = () => {
                         <PartiesCard
                             selectedParty={selectedParty}
                             setSelectedParty={setSelectedParty}
+                            partyModalState={partyModalState}
+                            setPartyModalState={setPartyModalState}
                         />
                     </div>
                     <div className="flex-fill" style={{height:'70%'}}>
@@ -28,6 +69,12 @@ const PartyManagementPage = () => {
                 <div className="col-lg-4 h-100">
                     <PartyDetailsCard
                         party={selectedParty}
+                        onEditParty={(party) => setPartyModalState({
+                            show: true,
+                            mode: 'edit',
+                            party
+                        })}
+                        onViewTransactions={handleViewTransactions}
                     />
 
                 </div>

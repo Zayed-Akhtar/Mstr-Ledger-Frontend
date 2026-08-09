@@ -11,14 +11,20 @@ import { showToast } from "../../../features/toast/toastSlice";
 
 const PartiesCard = ({
     selectedParty,
-    setSelectedParty
+    setSelectedParty,
+    partyModalState,
+    setPartyModalState
 }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [partyToDelete, setPartyToDelete] = useState(null);
-    const [showPartyModal, setShowPartyModal] = useState(false);
-    const [modalMode, setModalMode] = useState("create");
-    const [editingParty, setEditingParty] = useState(null);
+    const [internalPartyModalState, setInternalPartyModalState] = useState({
+        show: false,
+        mode: "create",
+        party: null
+    });
     const dispatch = useDispatch();
+    const modalState = partyModalState ?? internalPartyModalState;
+    const setModalState = setPartyModalState ?? setInternalPartyModalState;
     const [parties, setParties] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
@@ -26,6 +32,22 @@ const PartiesCard = ({
     const [search, setSearch] = useState("");
     const serverEndpoint = import.meta.env.VITE_SERVER_ENDPOINT;
     const PAGE_SIZE = 5;
+
+    const openPartyModal = (mode = "create", party = null) => {
+        setModalState({
+            show: true,
+            mode,
+            party
+        });
+    };
+
+    const closePartyModal = () => {
+        setModalState({
+            show: false,
+            mode: "create",
+            party: null
+        });
+    };
 
     const columns = [
 
@@ -128,19 +150,13 @@ const PartiesCard = ({
     };
     const handleAddParty = () => {
 
-        setEditingParty(null);
-        setModalMode("create");
-
-        setShowPartyModal(true);
+        openPartyModal("create");
 
     };
 
     const handleEditParty = (party) => {
 
-        setEditingParty(party);
-        setModalMode("edit");
-
-        setShowPartyModal(true);
+        openPartyModal("edit", party);
 
     };
 
@@ -197,7 +213,7 @@ const PartiesCard = ({
         const payload = normalizePartyPayload(partyData);
 
         try {
-            if (modalMode === "create") {
+            if (modalState.mode === "create") {
                 const response = await axios.post(
                     `${serverEndpoint}/party/add-party`,
                     payload
@@ -218,9 +234,9 @@ const PartiesCard = ({
                     })
                 );
             }
-            else {                
+            else {
                 const response = await axios.put(
-                    `${serverEndpoint}/party/update-party/${editingParty?._id}`,
+                    `${serverEndpoint}/party/update-party/${modalState.party?._id}`,
                     payload
                 );
 
@@ -247,15 +263,14 @@ const PartiesCard = ({
                 );
             }
 
-            setShowPartyModal(false);
-            setEditingParty(null);
+            closePartyModal();
             fetchParties();
         } catch (error) {
             console.error("Error saving party:", error);
             dispatch(
                 showToast({
                     title: "Error",
-                    message: modalMode === "create"
+                    message: modalState.mode === "create"
                         ? "Failed to add party."
                         : "Failed to update party.",
                     variant: "danger"
@@ -318,13 +333,12 @@ const PartiesCard = ({
             />
             <PartyModal
 
-                show={showPartyModal}
+                show={modalState.show}
 
-                onHide={() => setShowPartyModal(false)}
+                onHide={closePartyModal}
 
-                mode={modalMode}
-
-                party={editingParty}
+                mode={modalState.mode}
+                party={modalState.party}
                 onSave={handleSaveParty}
             />
             <ConfirmDeleteModal

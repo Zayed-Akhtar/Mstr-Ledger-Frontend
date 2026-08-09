@@ -72,6 +72,32 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
     }
 
     useEffect(() => {
+        const selectedParty = selectedTransaction?.party;
+
+        if (selectedParty) {
+            setCurrentParty((prev) => ({
+                name: selectedParty.name ?? prev?.name ?? '',
+                partyCode: selectedParty.partyCode ?? prev?.partyCode ?? '',
+                area: selectedParty.area ?? prev?.area ?? '',
+                phoneNumber: selectedParty.phoneNumber ?? prev?.phoneNumber ?? '',
+                _id: selectedParty._id ?? prev?._id ?? ''
+            }));
+
+            setPartyNameInput(selectedParty.name ?? '')
+            setPartyCodeInput(selectedParty.partyCode ?? '')
+
+            if (!selectedTransaction?._id) {
+                setDate(getTodayDate());
+                setDebitCredit('')
+                setIsCreditandDebitSelected(false)
+                setDescription('')
+                setCredit('')
+                setDebit('')
+                setBalance('')
+                return;
+            }
+        }
+
         if (selectedTransaction?._id) {
             setDate(formatDateValue(selectedTransaction.transactionDate))
 

@@ -1,13 +1,31 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom';
 import EntryForm from './EntryForm'
 import Content from '../Content'
 import Transactions from '../TransactionComponents/Transactions'
 import { TbFileDatabase } from "react-icons/tb";
 import { TbTransactionRupee } from "react-icons/tb";
+
 function Entry() {
+    const location = useLocation();
     const [partyTransactions, setPartyTransactions] = useState([])
     const [selectedTransaction, setSelectedTransaction] = useState(null)
     const [resetDateFilter, setResetDateFilter] = useState(0);
+
+    useEffect(() => {
+        const routeParty = location.state?.fetchedPartyWithTxn;
+        const routeTransactions = Array.isArray(location.state?.transactions)
+            ? location.state.transactions
+            : [];
+
+        if (routeParty) {
+            setPartyTransactions(routeTransactions);
+            setSelectedTransaction({
+                party: routeParty,
+                transactions: routeTransactions
+            });
+        }
+    }, [location.state]);
 
     return (
         <Content>
