@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { NavLink } from 'react-router-dom';
 import { FaFileSignature } from "react-icons/fa6";
 import { FaUsers } from "react-icons/fa";
 import { MdOutlineBook } from "react-icons/md";
@@ -8,25 +9,28 @@ function Sidebar() {
   const menuItems = [
     {
       name: "Entry",
+      path: "/Entry",
       icon: FaFileSignature,
     },
     {
       name: "Parties",
+      path: "/Parties",
       icon: FaUsers,
     },
     {
       name: "Day Book",
+      path: "/day-book",
       icon: MdOutlineBook,
     },
     {
       name: "Report",
+      path: "/reports",
       icon: HiOutlineDocumentReport,
     },
   ];
 
-  const [activeElement, setActiveElement] = useState();
   return (
-    <div className="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary sidebar" style={{  }}>
+    <div className="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary sidebar" style={{}}>
       <a href="/" className="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
         <svg className="bi pe-none me-2" width="25" height="32" aria-hidden="true">
           <use xlinkHref="#bootstrap"></use>
@@ -39,26 +43,17 @@ function Sidebar() {
           const Icon = item.icon;
 
           return (
-            <li
-              className="nav-item"
-              key={index}
-              onClick={() => setActiveElement(index)}
-            >
-              <a
-                href="#"
-                className={`nav-link ${activeElement === index
-                    ? "active"
-                    : "link-body-emphasis"
-                  }`}
-                  style={{fontSize:'0.8rem'}}
+            <li className="nav-item" key={index}>
+              <NavLink
+                to={item.path}
+                className={({ isActive }) =>
+                  `nav-link ${isActive ? "active" : "link-body-emphasis"}`
+                }
+                style={{ fontSize: '0.8rem' }}
               >
-                <Icon
-                  size={25}
-                  style={{ marginRight: "10px" }}
-                />
-
+                <Icon size={25} style={{ marginRight: "10px" }} />
                 {item.name}
-              </a>
+              </NavLink>
             </li>
           );
         })}

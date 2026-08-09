@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { RxPencil2 } from "react-icons/rx";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { MdOutlineLibraryAddCheck } from "react-icons/md";
@@ -24,6 +24,45 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
     const [isSaving, setIsSaving] = useState(false)
     const [isUpdate, setIsUpdate] = useState(false);
     const serverEndpoint = import.meta.env.VITE_SERVER_ENDPOINT;
+    const newButtonRef = useRef(null)
+    const openButtonRef = useRef(null)
+    const deleteButtonRef = useRef(null)
+    const saveButtonRef = useRef(null)
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            const key = event.key
+
+            if (key === 'F2') {
+                event.preventDefault()
+                newButtonRef.current?.click()
+                return
+            }
+
+            if (key === 'F5') {
+                event.preventDefault()
+                saveButtonRef.current?.click()
+                return
+            }
+
+            if (key === 'F4') {
+                event.preventDefault()
+                openButtonRef.current?.click()
+                return
+            }
+
+            if (key === 'F7') {
+                event.preventDefault()
+                deleteButtonRef.current?.click()
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyDown)
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown)
+        }
+    }, [])
 
     const formatDateValue = (value) => {
         if (!value) return ''
@@ -416,9 +455,10 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
 
                 <div className="col-12" style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', gap: '7%', width: 'fit-content', height:'fit-content' }}>
-                        <button type="button" onClick={clearCurrentEntry} className="btn btn-info icon-button"><RxPencil2 />New</button>
+                        <button type="button" ref={newButtonRef} onClick={clearCurrentEntry} className="btn btn-info icon-button"><RxPencil2 />New</button>
                         <button
                             type="button"
+                            ref={openButtonRef}
                             className="btn btn-outline-primary"
                             style={{ display: 'flex', alignItems: 'center' }}
                             onClick={() => {
@@ -428,6 +468,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                         ><FaRegFolderOpen />Open</button>
                         <button
                             type="button"
+                            ref={deleteButtonRef}
                             className="btn btn-danger icon-button"
                             onClick={handleDelete}
                             disabled={!selectedTransaction?._id || isSaving}
@@ -437,7 +478,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                             Delete
                         </button>
                     </div>
-                    <button className="btn btn-dark icon-button" style={{height:'fit-content'}} type="submit" disabled={isSaving || !isSaveValid}>
+                    <button ref={saveButtonRef} className="btn btn-dark icon-button" style={{height:'fit-content'}} type="submit" disabled={isSaving || !isSaveValid}>
                         <MdOutlineLibraryAddCheck />
                         {isSaving
                             ? (isUpdate ? "Updating..." : "Saving...")

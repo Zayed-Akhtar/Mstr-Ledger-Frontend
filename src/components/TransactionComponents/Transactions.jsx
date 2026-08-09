@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import DateRangeFilter from '../common/DateRangeFilter';
 import { GrDocumentPdf } from "react-icons/gr";
 import axios from 'axios';
@@ -9,11 +9,24 @@ function Transactions({ transactions = [], onSelectTransaction, resetDate, curre
   const tableHeaders = ['Txn Number', 'Date', 'Credit', 'Debit', 'Balance', 'Description'];
   const [resetDateFilter, setResetDateFilter] = useState(0);
   const serverEndpoint = import.meta.env.VITE_SERVER_ENDPOINT;
-
+  const tableScrollRef = useRef(null);
 
   useEffect(() => {
     setResetDateFilter(prev => prev + 1);
   }, [transactions, resetDate]);
+
+  useEffect(() => {
+    if (!tableScrollRef.current) return;
+
+    if (transactions.length > 0) {
+      tableScrollRef.current.scrollTo({
+        top: tableScrollRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    } else {
+      tableScrollRef.current.scrollTop = 0;
+    }
+  }, [transactions, currentParty?._id]);
 
   const formatDate = (dateString) => {
     if (!dateString) return '-'
@@ -22,68 +35,68 @@ function Transactions({ transactions = [], onSelectTransaction, resetDate, curre
     return date.toLocaleDateString()
   }
 
-const handlePdfDownload = async () => {
+  const handlePdfDownload = async () => {
 
     if (!currentParty?._id) {
-        alert("Please select a party first.");
-        return;
+      alert("Please select a party first.");
+      return;
     }
 
     try {
 
-        const response = await axios.get(
-            `${serverEndpoint}/transaction/export-pdf`,
-            {
-                params: {
-                    partyId: currentParty._id,
-                    fromDate,
-                    toDate
-                },
-                responseType: "blob"
-            }
-        );
+      const response = await axios.get(
+        `${serverEndpoint}/transaction/export-pdf`,
+        {
+          params: {
+            partyId: currentParty._id,
+            fromDate,
+            toDate
+          },
+          responseType: "blob"
+        }
+      );
 
-        // Default filename
-        let fileName = "transactions.pdf";
+      // Default filename
+      let fileName = "transactions.pdf";
 
-        // Read filename from Content-Disposition header
-        const disposition = response.headers["content-disposition"];        
-        if (disposition) {
+      // Read filename from Content-Disposition header
+      const disposition = response.headers["content-disposition"];
+      if (disposition) {
 
-            const match = disposition.match(/filename="?([^"]+)"?/);
+        const match = disposition.match(/filename="?([^"]+)"?/);
 
-            if (match && match[1]) {
-                fileName = match[1];
-            }
-
+        if (match && match[1]) {
+          fileName = match[1];
         }
 
-        const blob = new Blob(
-            [response.data],
-            { type: "application/pdf" }
-        );
+      }
 
-        const url = window.URL.createObjectURL(blob);
+      const blob = new Blob(
+        [response.data],
+        { type: "application/pdf" }
+      );
 
-        const link = document.createElement("a");
+      const url = window.URL.createObjectURL(blob);
 
-        link.href = url;
-        link.download = fileName;
+      const link = document.createElement("a");
 
-        document.body.appendChild(link);
+      link.href = url;
+      link.download = fileName;
 
-        link.click();
+      document.body.appendChild(link);
 
-        document.body.removeChild(link);
+      link.click();
 
-        window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(url);
 
     } catch (error) {
 
-        console.error("Error downloading PDF:", error);
+      console.error("Error downloading PDF:", error);
 
     }
-};
+  };
 
   const filteredTransactions = transactions.filter((txn) => {
 
@@ -101,7 +114,16 @@ const handlePdfDownload = async () => {
 
   return (
     <div className="bd-example-snippet bd-code-snippet transaction-table wht-bg">
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        position: 'sticky',
+        top: 0,
+        zIndex: 2,
+        backgroundColor: '#fff',
+        paddingBottom: '0.5rem'
+      }}>
         <DateRangeFilter
           fromDate={fromDate}
           toDate={toDate}
@@ -114,15 +136,19 @@ const handlePdfDownload = async () => {
           className="btn btn-success"
           disabled={transactions.length === 0}
           onClick={handlePdfDownload}
-          style={{fontSize:'small'}}
+          style={{ fontSize: 'small' }}
         >
           Export As <GrDocumentPdf />
-        </button>      
-        </div>
+        </button>
+      </div>
 
-      <div className="bd-example m-0 border-0">
-        <table className="table table-striped table-hover">
-          <thead>
+      <div
+        ref={tableScrollRef}
+        className="bd-example m-0 border-0"
+        style={{ maxHeight: '420px', overflowY: 'auto' }}
+      >
+        <table className="table table-striped table-hover mb-0">
+          <thead style={{ position: 'sticky', top: 0, zIndex: 1, backgroundColor: '#fff' }}>
             <tr>
               {tableHeaders.map((header, index) => (
                 <th key={index} scope="col">{header}</th>
