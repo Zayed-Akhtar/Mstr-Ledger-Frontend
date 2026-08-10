@@ -190,6 +190,25 @@ function LookupField({
         }
     };
 
+    const handleInputKeyDown = (event) => {
+        if (event.key !== "Enter") {
+            return;
+        }
+
+        event.preventDefault();
+
+        if (showResults && results.length > 0) {
+            handleSelect(results[0]);
+            return;
+        }
+
+        handleSearch();
+    };
+
+    const handleSearchButtonClick = () => {
+        handleSearch();
+    };
+
     const renderDefaultResults = () => (
         <div
             style={{
@@ -286,12 +305,13 @@ function LookupField({
                         placeholder={placeholder}
                         value={safeValue}
                         onChange={(e) => onChange(e.target.value)}
+                        onKeyDown={handleInputKeyDown}
                     />
 
                     <button
                         type="button"
                         className="btn btn-outline-info"
-                        onClick={handleSearch}
+                        onClick={handleSearchButtonClick}
                         disabled={loading || !safeValue.trim()}
                     >
                         <VscSearchFuzzy />

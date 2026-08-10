@@ -349,6 +349,53 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
         populatePartyData(party, party.transactions || [])
     }
 
+    const syncDebitCreditFromDescription = (value) => {
+        const normalized = (value ?? '').trim().toLowerCase();
+
+        if (!normalized) return;
+
+        if (normalized === 'bill' || normalized.startsWith('bill')) {
+            setDebitCredit('Debit');
+            setIsCreditandDebitSelected(false);
+            return;
+        }
+
+        if (normalized === 'cash' || normalized.startsWith('cash')) {
+            setDebitCredit('Credit');
+            setIsCreditandDebitSelected(false);
+        }
+    }
+
+    useEffect(()=>{
+        const timer = setTimeout(() => {
+            if(description === 'b' || description === 'B'){
+                setDescription('Bill')
+                syncDebitCreditFromDescription('Bill')
+            }
+            if(description === 'c' || description === 'C'){
+                setDescription('Cash')
+                syncDebitCreditFromDescription('Cash')
+            }
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [description])
+    // const handleDescriptionChange = () => {
+    //     if (description === 'b' ||) {
+    //         e.preventDefault();
+    //         setDescription('Bill');
+    //         syncDebitCreditFromDescription('Bill');
+    //         return;
+    //     }
+
+    //     if (e.key === 'c' || e.key === 'C') {
+    //         e.preventDefault();
+    //         setDescription('Cash');
+    //         syncDebitCreditFromDescription('Cash');
+    //         return;
+    //     }
+    // }
+
     // validation: enable Save only when required fields are populated
     const isSaveValid = (() => {
         const hasParty = Boolean(currentParty?._id)
