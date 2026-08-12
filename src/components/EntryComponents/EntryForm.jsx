@@ -73,7 +73,6 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
 
     useEffect(() => {
         const selectedParty = selectedTransaction?.party;
-
         if (selectedParty) {
             setCurrentParty((prev) => ({
                 name: selectedParty.name ?? prev?.name ?? '',
@@ -82,9 +81,6 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                 phoneNumber: selectedParty.phoneNumber ?? prev?.phoneNumber ?? '',
                 _id: selectedParty._id ?? prev?._id ?? ''
             }));
-
-            setPartyNameInput(selectedParty.name ?? '')
-            setPartyCodeInput(selectedParty.partyCode ?? '')
 
             if (!selectedTransaction?._id) {
                 setDate(getTodayDate());
@@ -167,6 +163,14 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
         onResetDateFilter?.()
     }
 
+    const resetCurrentPartyEntry = ()=>{
+        setDescription('')
+        setDebitCredit('')
+        setIsCreditandDebitSelected(false)
+        setCredit('')
+        setDebit('')
+    }
+
     const handleSave = async (event) => {
         event.preventDefault()
         setSaveError('')
@@ -202,6 +206,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
             } else {
                 setSaveError('Save completed but server returned no transactions.')
             }
+            resetCurrentPartyEntry();
         } catch (error) {
             setSaveError(error.response?.data?.message || error.message || 'Failed to save transaction')
         } finally {
@@ -298,14 +303,14 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
             onPartyTransactionsLoaded(transactions);
 
             // Populate form with last transaction
-            if (transactions.length > 0) {
-                onSelectedTransactionChange(
-                    transactions[transactions.length - 1]
-                );
-            } else {
-                onSelectedTransactionChange(null);
-            }
-
+            // if (transactions.length > 0) {
+            //     onSelectedTransactionChange(
+            //         transactions[transactions.length - 1]
+            //     );
+            // } else {
+            //     onSelectedTransactionChange(null);
+            // }
+                resetCurrentPartyEntry();
         } catch (error) {
             setSaveError(
                 error.response?.data?.message ||
@@ -376,7 +381,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                 setDescription('Cash')
                 syncDebitCreditFromDescription('Cash')
             }
-        }, 500);
+        }, 600);
 
         return () => clearTimeout(timer);
     }, [description])
@@ -551,7 +556,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                             Delete
                         </button>
                     </div>
-                    <button ref={saveButtonRef} className="btn btn-dark icon-button" style={{height:'fit-content'}} type="submit" disabled={isSaving || !isSaveValid}>
+                    <button ref={saveButtonRef} className="btn btn-dark icon-button" style={{height:'fit-content'}} type="submit">
                         <MdOutlineLibraryAddCheck />
                         {isSaving
                             ? (isUpdate ? "Updating..." : "Saving...")
