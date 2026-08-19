@@ -31,11 +31,8 @@ function Sidebar() {
 
   return (
     <div className="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary sidebar" style={{}}>
-      <a href="/" className="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-        <svg className="bi pe-none me-2" width="25" height="32" aria-hidden="true">
-          <use xlinkHref="#bootstrap"></use>
-        </svg>
-        <span className="fs-4">Sidebar</span>
+      <a href="/" className="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none" style={{marginLeft:'15%'}}>
+              <img src="/mstr-ledger.png" alt="mstr-ledger logo" width="120" height="90" />
       </a>
       <hr />
       <ul className="nav nav-pills flex-column mb-auto">

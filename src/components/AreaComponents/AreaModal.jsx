@@ -19,8 +19,6 @@ const AreaModal = ({
     area,
     onSave
 }) => {
-    console.log('this is area', area);
-
     const [formData, setFormData] = useState(emptyArea);
 
     const [errors, setErrors] = useState({});

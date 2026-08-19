@@ -31,7 +31,6 @@ function TransactionsModal({ visible, selectedTransaction, onClose, onSelectTran
         const res = await axios.get(url, { params, signal: controller.signal })
         if (!active) return
         const data = res.data || {}
-        console.log('transactions from TransactionModal', data);
         setTransactions(Array.isArray(data.items) ? data.items : [])
       } catch (err) {
         if (!active) return

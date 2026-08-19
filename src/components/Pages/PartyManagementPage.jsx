@@ -26,9 +26,7 @@ const PartyManagementPage = () => {
             const fetchedPartyWithTxn = response.data?.items ?? response.data?.data ?? response.data ?? {};
             const transactions = Array.isArray(fetchedPartyWithTxn.transactions)
                     ? fetchedPartyWithTxn.transactions
-                    : [];
-            console.log('transactions from party management', transactions);
-            
+                    : [];        
             navigate('/Entry', {
                 state: {
                     fetchedPartyWithTxn,

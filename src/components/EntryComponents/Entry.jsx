@@ -18,7 +18,7 @@ function Entry() {
             ? location.state.transactions
             : [];
 
-        if (routeParty) {
+        if (routeParty) {            
             setPartyTransactions(routeTransactions);
             setSelectedTransaction({
                 party: routeParty,
@@ -33,8 +33,8 @@ function Entry() {
                 <div className='entry-title-text'>
                     <h1 className='display-6' style={{ color: '#776b6b' }}><TbFileDatabase style={{ marginRight: '3%', marginBottom: '1%' }} />Entry</h1>
                 </div>
-                <div className='wht-bg' style={{width: '50%', marginRight: '20%' }}>
-                    <h1 className='display-6' style={{ color: '#776b6b' }}><TbTransactionRupee style={{ marginRight: '3%', marginBottom: '1%' }} />Transactions</h1>
+                <div className='wht-bg transaction-title'>
+                    <h1 className='display-6'><TbTransactionRupee style={{ marginRight: '3%', marginBottom: '1%' }} />Transactions</h1>
                 </div>
             </div>
             <div style={{ display: 'flex', gap: '2%', alignItems: 'stretch', minHeight: '0', height: '100%' }}>

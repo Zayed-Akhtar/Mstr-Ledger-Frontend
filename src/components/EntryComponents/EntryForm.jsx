@@ -81,6 +81,8 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                 phoneNumber: selectedParty.phoneNumber ?? prev?.phoneNumber ?? '',
                 _id: selectedParty._id ?? prev?._id ?? ''
             }));
+            setPartyNameInput(selectedParty.name);
+            setPartyCodeInput(selectedParty.partyCode);
 
             if (!selectedTransaction?._id) {
                 setDate(getTodayDate());
@@ -123,10 +125,10 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                     _id: selectedTransaction.party._id ?? prev?._id ?? ''
                 }))
 
-                if (selectedTransaction.party.name) {
+                if (selectedTransaction.party.name) {                    
                     setPartyNameInput(selectedTransaction.party.name)
                 }
-                if (selectedTransaction.party.partyCode) {
+                if (selectedTransaction.party.partyCode) {                    
                     setPartyCodeInput(selectedTransaction.party.partyCode)
                 }
             }

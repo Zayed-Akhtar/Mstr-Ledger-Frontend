@@ -23,6 +23,14 @@
   height: fit-content;
   margin-bottom: 4%;
 }
+.transaction-title{
+  border-bottom: 3px solid #6767aa;
+  background-color: #e7f2f5;
+  box-shadow: 0 0px 7px rgba(0, 0, 0, 0.2);
+  width: 50%;
+  margin-right: 20%; 
+  color: #6767aa;
+}
 
 .entry-title-text {
   width: 50%;
@@ -30,6 +38,7 @@
   margin-left: auto;
   background-color: #edfbeb;
   border-right: 1px solid #e5e5e5;
+  border-bottom: 3px solid brown;
 }
 
 .party-modal-backdrop {
