@@ -15,7 +15,7 @@ function App() {
         <main style={{ flex: 1, padding: '1rem' }}>
           <Outlet />
         </main>
-        <ToastNotification />
+        {/* <ToastNotification /> */}
       </div>
     </>
   )

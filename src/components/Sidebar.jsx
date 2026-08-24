@@ -9,22 +9,22 @@ function Sidebar() {
   const menuItems = [
     {
       name: "Entry",
-      path: "/Entry",
+      path: "Entry",
       icon: FaFileSignature,
     },
     {
       name: "Parties",
-      path: "/Parties",
+      path: "Parties",
       icon: FaUsers,
     },
     {
       name: "Day Book",
-      path: "/day-book",
+      path: "day-book",
       icon: MdOutlineBook,
     },
     {
       name: "Report",
-      path: "/reports",
+      path: "reports",
       icon: HiOutlineDocumentReport,
     },
   ];

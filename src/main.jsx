@@ -6,6 +6,13 @@ import { store } from './store.js'
 import { Provider } from 'react-redux'
 import Entry from './components/EntryComponents/Entry';
 import PartyManagementPage from './components/Pages/PartyManagementPage';
+import AuthenticationPage from './pages/AuthenticationPage.jsx';
+import { LoginForm } from './pages/LoginForm.jsx';
+import { SignupForm } from './pages/SignupForm.jsx';
+import AuthenticationInitializer from './components/AuthenticationInitializer.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
+import ToastNotification from './components/common/ToastNotification.jsx';
+import PublicRoute from './components/PublicRoute.jsx';
 
 function FallbackComponent({ title }) {
   return (
@@ -17,21 +24,102 @@ function FallbackComponent({ title }) {
 }
 
 const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <App />,
+{
+    path: "/mstr-ledger",
+
+    element: <ProtectedRoute />,
+
     children: [
-      { index: true, element: <Navigate to="/Entry" replace /> },
-      { path: 'Entry', element: <Entry /> },
-      { path: 'Parties', element: <PartyManagementPage /> },
-      { path: 'day-book', element: <FallbackComponent title="Day Book" /> },
-      { path: 'reports', element: <FallbackComponent title="Reports" /> },
-    ],
-  },
+
+        {
+            element: <App />,
+            children: [
+
+                {
+                    index: true,
+                    element: (
+                        <Navigate
+                            to="Entry"
+                            replace
+                        />
+                    )
+                },
+
+                {
+                    path: "Entry",
+                    element: <Entry />
+                },
+
+                {
+                    path: "Parties",
+                    element: <PartyManagementPage />
+                },
+
+                {
+                    path: "day-book",
+                    element: (
+                        <FallbackComponent
+                            title="Day Book"
+                        />
+                    )
+                },
+
+                {
+                    path: "reports",
+                    element: (
+                        <FallbackComponent
+                            title="Reports"
+                        />
+                    )
+                }
+
+            ]
+        }
+
+    ]
+},
+{
+    path: "/",
+    element: <AuthenticationPage />,
+
+    children: [
+
+        {
+            element: <PublicRoute />,
+
+            children: [
+
+                {
+                    index: true,
+                    element: (
+                        <Navigate
+                            to="login"
+                            replace
+                        />
+                    )
+                },
+
+                {
+                    path: "login",
+                    element: <LoginForm />
+                },
+
+                {
+                    path: "signup",
+                    element: <SignupForm />
+                }
+
+            ]
+        }
+
+    ]
+}
 ])
 
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>
+    <AuthenticationInitializer/>
     <RouterProvider router={router} />
+    <ToastNotification />
   </Provider>
 )

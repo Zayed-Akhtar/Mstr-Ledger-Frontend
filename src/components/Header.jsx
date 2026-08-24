@@ -1,4 +1,46 @@
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { clearCredentials } from "../store/authSlice";
+import { logoutUser } from "../services/authService";
+import { showToast } from "../features/toast/toastSlice";
 function Header() {
+const dispatch = useDispatch();
+const navigate = useNavigate();
+
+const handleLogout = async () => {
+
+    try {
+
+        await logoutUser();
+
+        dispatch(clearCredentials());
+
+        dispatch(
+            showToast({
+                message: "Logged out successfully.",
+                variant: "success",
+            })
+        );
+
+        navigate("/login", {
+            replace: true,
+        });
+
+    } catch (error) {
+
+        console.error("Logout error:", error);
+
+        dispatch(
+            showToast({
+                message:
+                    "Unable to logout. Please try again.",
+                variant: "danger",
+            })
+        );
+
+    }
+};
   return (
     <header className="p-3 text-bg-dark" style={{height:'10%'}}>
       <div className="container">
@@ -52,14 +94,9 @@ function Header() {
             <button
               type="button"
               className="btn btn-outline-light me-2"
+              onClick={handleLogout}
             >
-              Login
-            </button>
-            <button
-              type="button"
-              className="btn btn-warning"
-            >
-              Sign-up
+              Logout
             </button>
           </div>
         </div>

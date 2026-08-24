@@ -27,7 +27,7 @@ const PartyManagementPage = () => {
             const transactions = Array.isArray(fetchedPartyWithTxn.transactions)
                     ? fetchedPartyWithTxn.transactions
                     : [];        
-            navigate('/Entry', {
+            navigate('/mstr-ledger/Entry', {
                 state: {
                     fetchedPartyWithTxn,
                     transactions
@@ -35,7 +35,7 @@ const PartyManagementPage = () => {
             });
         } catch (error) {
             console.error('Failed to load party transactions:', error);
-            navigate('/Entry', {
+            navigate('/mstr-ledger/Entry', {
                 state: {
                     party,
                     transactions: party.transactions || []
