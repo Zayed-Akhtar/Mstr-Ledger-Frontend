@@ -55,7 +55,7 @@ function TransactionsModal({ visible, selectedTransaction, onClose, onSelectTran
       <div className="party-modal">
         <div className="party-modal-header">
           <h5>Choose Party</h5>
-          <button type="button" className="btn-close" aria-label="Close" onClick={onClose}></button>
+          <button type="button" className="btn-close" aria-label="Close" onClick={onClose}>X</button>
         </div>
         <div className="party-modal-body">
           <div className="mb-2">

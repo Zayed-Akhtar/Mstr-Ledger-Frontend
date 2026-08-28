@@ -4,10 +4,16 @@ import { useNavigate } from "react-router-dom";
 import { clearCredentials } from "../store/authSlice";
 import { logoutUser } from "../services/authService";
 import { showToast } from "../features/toast/toastSlice";
+import { MdAccountBalance } from "react-icons/md";
+
 function Header() {
 const dispatch = useDispatch();
 const navigate = useNavigate();
-
+const {
+        user
+    } = useSelector(
+        (state) => state.auth
+    );
 const handleLogout = async () => {
 
     try {
@@ -50,31 +56,12 @@ const handleLogout = async () => {
             className="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none"
           >
           </a>
-          <ul className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+          <ul className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0" style={{fontFamily:'monospace'}}>
             <li>
-              <a href="#" className="nav-link px-2 text-secondary">
-                Home
-              </a>
+              <h4 className="px-2"><MdAccountBalance /></h4>  
             </li>
             <li>
-              <a href="#" className="nav-link px-2 text-white">
-                Features
-              </a>
-            </li>
-            <li>
-              <a href="#" className="nav-link px-2 text-white">
-                Pricing
-              </a>
-            </li>
-            <li>
-              <a href="#" className="nav-link px-2 text-white">
-                FAQs
-              </a>
-            </li>
-            <li>
-              <a href="#" className="nav-link px-2 text-white">
-                About
-              </a>
+              <h3 className="px-2">{user.fullname}</h3>
             </li>
           </ul>
 

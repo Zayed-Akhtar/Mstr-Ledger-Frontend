@@ -8,7 +8,7 @@ import axios from 'axios'
 import LookupField from '../common/LookupField';
 import { getTodayDate } from '../../helpers/dateHelpers';
 
-function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedTransactionChange, onResetDateFilter }) {
+function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedTransactionChange, onResetDateFilter, selectedPartyObject }) {
     const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false)
     const [date, setDate] = useState(getTodayDate())
     const [partyNameInput, setPartyNameInput] = useState('')
@@ -64,6 +64,14 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
         }
     }, [])
 
+    useEffect(() => {
+        if (selectedPartyObject?.party && selectedPartyObject.transactions) {
+            let selectedParty = selectedPartyObject?.party;
+            let selectedTransactions = selectedPartyObject?.transactions;
+
+            populatePartyData(selectedParty, selectedTransactions)
+        }
+    }, [selectedPartyObject])
     const formatDateValue = (value) => {
         if (!value) return ''
         const parsed = new Date(value)
@@ -72,30 +80,6 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
     }
 
     useEffect(() => {
-        const selectedParty = selectedTransaction?.party;
-        if (selectedParty) {
-            setCurrentParty((prev) => ({
-                name: selectedParty.name ?? prev?.name ?? '',
-                partyCode: selectedParty.partyCode ?? prev?.partyCode ?? '',
-                area: selectedParty.area ?? prev?.area ?? '',
-                phoneNumber: selectedParty.phoneNumber ?? prev?.phoneNumber ?? '',
-                _id: selectedParty._id ?? prev?._id ?? ''
-            }));
-            setPartyNameInput(selectedParty.name);
-            setPartyCodeInput(selectedParty.partyCode);
-
-            if (!selectedTransaction?._id) {
-                setDate(getTodayDate());
-                setDebitCredit('')
-                setIsCreditandDebitSelected(false)
-                setDescription('')
-                setCredit('')
-                setDebit('')
-                setBalance('')
-                return;
-            }
-        }
-
         if (selectedTransaction?._id) {
             setDate(formatDateValue(selectedTransaction.transactionDate))
 
@@ -125,10 +109,10 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                     _id: selectedTransaction.party._id ?? prev?._id ?? ''
                 }))
 
-                if (selectedTransaction.party.name) {                    
+                if (selectedTransaction.party.name) {
                     setPartyNameInput(selectedTransaction.party.name)
                 }
-                if (selectedTransaction.party.partyCode) {                    
+                if (selectedTransaction.party.partyCode) {
                     setPartyCodeInput(selectedTransaction.party.partyCode)
                 }
             }
@@ -165,7 +149,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
         onResetDateFilter?.()
     }
 
-    const resetCurrentPartyEntry = ()=>{
+    const resetCurrentPartyEntry = () => {
         setDescription('')
         setDebitCredit('')
         setIsCreditandDebitSelected(false)
@@ -303,16 +287,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
             const transactions = response.data?.items?.transactions || [];
 
             onPartyTransactionsLoaded(transactions);
-
-            // Populate form with last transaction
-            // if (transactions.length > 0) {
-            //     onSelectedTransactionChange(
-            //         transactions[transactions.length - 1]
-            //     );
-            // } else {
-            //     onSelectedTransactionChange(null);
-            // }
-                resetCurrentPartyEntry();
+            resetCurrentPartyEntry();
         } catch (error) {
             setSaveError(
                 error.response?.data?.message ||
@@ -352,10 +327,6 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
         }
     }
 
-    const handleSelectPartyFromDropdown = (party) => {
-        populatePartyData(party, party.transactions || [])
-    }
-
     const syncDebitCreditFromDescription = (value) => {
         const normalized = (value ?? '').trim().toLowerCase();
 
@@ -373,13 +344,26 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
         }
     }
 
-    useEffect(()=>{
+    const handleCreditDebitSelect = (e)=>{
+        const v = e.target.value
+        setDebitCredit(v)
+        setIsCreditandDebitSelected(v === 'Credit & Debit')
+        if(v === 'Credit'){
+            setDescription('Cash')
+        }else if(v === 'Debit'){
+            setDescription('Bill')
+        }else{
+            setDescription('Payement on bill')
+        }
+    }
+
+    useEffect(() => {
         const timer = setTimeout(() => {
-            if(description === 'b' || description === 'B'){
+            if (description === 'b' || description === 'B') {
                 setDescription('Bill')
                 syncDebitCreditFromDescription('Bill')
             }
-            if(description === 'c' || description === 'C'){
+            if (description === 'c' || description === 'C') {
                 setDescription('Cash')
                 syncDebitCreditFromDescription('Cash')
             }
@@ -421,7 +405,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
 
     return (
         <>
-            <form className="row g-3 entry-form wht-bg"  onSubmit={isUpdate ? handleUpdate : handleSave}>
+            <form className="row g-3 entry-form wht-bg" onSubmit={isUpdate ? handleUpdate : handleSave}>
                 <LookupField
                     className="col-md-6"
                     id="partyName"
@@ -482,11 +466,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                         className="form-select"
                         id="debitCredit"
                         value={debitCredit}
-                        onChange={(e) => {
-                            const v = e.target.value
-                            setDebitCredit(v)
-                            setIsCreditandDebitSelected(v === 'Credit & Debit')
-                        }}
+                        onChange={handleCreditDebitSelect}
                         required
                     >
                         <option disabled value="">Choose...</option>
@@ -517,7 +497,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                             required
                         />
                     </div>
-                )}
+                    )}
                 {isCreditandDebitSelected &&
                     <div className="col-md-6" >
                         <label htmlFor="amountDebit" className="form-label">Debit</label>
@@ -534,7 +514,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                 }
 
                 <div className="col-12" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', gap: '7%', width: 'fit-content', height:'fit-content' }}>
+                    <div style={{ display: 'flex', gap: '7%', width: 'fit-content', height: 'fit-content' }}>
                         <button type="button" ref={newButtonRef} onClick={clearCurrentEntry} className="btn btn-info icon-button"><RxPencil2 />New</button>
                         <button
                             type="button"
@@ -552,13 +532,13 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                             className="btn btn-danger icon-button"
                             onClick={handleDelete}
                             disabled={!selectedTransaction?._id || isSaving}
-                            style={{height:'fit-content'}}
+                            style={{ height: 'fit-content' }}
                         >
                             <RiDeleteBin5Fill />
                             Delete
                         </button>
                     </div>
-                    <button ref={saveButtonRef} className="btn btn-dark icon-button" style={{height:'fit-content'}} type="submit">
+                    <button ref={saveButtonRef} className="btn btn-dark icon-button" style={{ height: 'fit-content' }} type="submit">
                         <MdOutlineLibraryAddCheck />
                         {isSaving
                             ? (isUpdate ? "Updating..." : "Saving...")

@@ -11,6 +11,7 @@ function Entry() {
     const [partyTransactions, setPartyTransactions] = useState([])
     const [selectedTransaction, setSelectedTransaction] = useState(null)
     const [resetDateFilter, setResetDateFilter] = useState(0);
+    const [selectedPartyObject, setSelectedPartyObject] = useState([])
 
     useEffect(() => {
         const routeParty = location.state?.fetchedPartyWithTxn;
@@ -19,11 +20,13 @@ function Entry() {
             : [];
 
         if (routeParty) {            
-            setPartyTransactions(routeTransactions);
-            setSelectedTransaction({
-                party: routeParty,
-                transactions: routeTransactions
-            });
+            // setPartyTransactions(routeTransactions);
+            // setSelectedTransaction({
+            //     party: routeParty,
+            //     transactions: routeTransactions
+            // });
+            setSelectedPartyObject({party: routeParty,
+                transactions: routeTransactions});
         }
     }, [location.state]);
 
@@ -43,6 +46,7 @@ function Entry() {
                     selectedTransaction={selectedTransaction}
                     onSelectedTransactionChange={setSelectedTransaction}
                     onResetDateFilter={() => setResetDateFilter(prev => prev + 1)}
+                    selectedPartyObject={selectedPartyObject}
                 />
                 <Transactions transactions={partyTransactions} onSelectTransaction={setSelectedTransaction} resetDate={resetDateFilter} currentParty={selectedTransaction?.party}/>
             </div>
