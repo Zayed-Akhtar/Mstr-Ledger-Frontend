@@ -183,7 +183,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
         }
 
         try {
-            const response = await axios.post(`${serverEndpoint}/transaction/add-transaction`, payload)
+            const response = await axios.post(`${serverEndpoint}/transaction/add-transaction`, payload, {withCredentials:true})
             const items = response.data?.items
             const transactions = items?.transactions
 

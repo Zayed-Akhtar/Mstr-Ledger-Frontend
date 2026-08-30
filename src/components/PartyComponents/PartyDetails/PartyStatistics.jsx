@@ -21,7 +21,7 @@ const PartyStatistics = ({ party }) => {
 
             try {
                 const response = await axios.get(
-                    `${serverEndpoint}/party/closing-balance/${party._id}`
+                    `${serverEndpoint}/party/closing-balance/${party._id}`, {withCredentials:true}
                 );
 
                 const result = response?.data.items || {};

@@ -11,6 +11,7 @@ import { NavLink } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { showToast } from "../features/toast/toastSlice";
+import { setCredentials } from "../store/authSlice";
 
 export const SignupForm = () => {
 

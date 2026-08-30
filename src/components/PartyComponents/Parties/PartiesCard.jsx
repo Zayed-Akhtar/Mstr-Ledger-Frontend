@@ -108,7 +108,8 @@ const PartiesCard = ({
                         page: currentPage,
                         limit: PAGE_SIZE,
                         search: search
-                    }
+                    }, 
+                    withCredentials:true
                 }
             );
 
@@ -216,7 +217,7 @@ const PartiesCard = ({
             if (modalState.mode === "create") {
                 const response = await axios.post(
                     `${serverEndpoint}/party/add-party`,
-                    payload
+                    payload, {withCredentials:true}
                 );
 
                 const createdParty = response.data?.items;
@@ -237,7 +238,7 @@ const PartiesCard = ({
             else {
                 const response = await axios.put(
                     `${serverEndpoint}/party/update-party/${modalState.party?._id}`,
-                    payload
+                    payload, {withCredentials:true}
                 );
 
                 const updatedParty = response.data?.items;

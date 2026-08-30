@@ -122,10 +122,11 @@ function LookupField({
                 response = await axios.get(searchUrl, {
                     params: {
                         [searchParam]: query
-                    }
+                    },
+                    withCredentials:true
                 });
             } else {
-                response = await axios.get(`${searchUrl}/${query}`);
+                response = await axios.get(`${searchUrl}/${query}`, {withCredentials:true});
             }
 
             const payload = response.data?.items ?? response.data?.data ?? response.data;

@@ -20,7 +20,7 @@ const PartyManagementPage = () => {
 
         try {
             const response = await axios.get(
-                `${serverEndpoint}/party/party-by-code/${party.partyCode}`
+                `${serverEndpoint}/party/party-by-code/${party.partyCode}`, {withCredentials:true}
             );
 
             const fetchedPartyWithTxn = response.data?.items ?? response.data?.data ?? response.data ?? {};

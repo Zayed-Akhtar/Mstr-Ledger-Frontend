@@ -39,7 +39,8 @@ const AreasCard = () => {
                         page: currentPage,
                         limit: PAGE_SIZE,
                         search
-                    }
+                    },
+                    withCredentials: true
                 }
             );
 
@@ -126,7 +127,7 @@ const AreasCard = () => {
             if (modalMode === "create") {
                 const response = await axios.post(
                     `${serverEndpoint}/area/add-area`,
-                    payload
+                    payload,{withCredentials:true}
                 );
 
                 const createdArea = response.data?.items || response.data?.area || response.data;

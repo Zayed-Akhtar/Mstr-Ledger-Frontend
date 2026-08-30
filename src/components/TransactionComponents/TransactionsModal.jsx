@@ -28,7 +28,7 @@ function TransactionsModal({ visible, selectedTransaction, onClose, onSelectTran
           params.phoneNumber = q
         }
         const url = `${serverEndpoint}/transaction/transactions`
-        const res = await axios.get(url, { params, signal: controller.signal })
+        const res = await axios.get(url, { params, signal: controller.signal, withCredentials:true })
         if (!active) return
         const data = res.data || {}
         setTransactions(Array.isArray(data.items) ? data.items : [])
