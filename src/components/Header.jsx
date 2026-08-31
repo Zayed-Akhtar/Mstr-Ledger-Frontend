@@ -69,14 +69,8 @@ const handleLogout = async () => {
             className="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3"
             role="search"
           >
-            <input
-              type="search"
-              className="form-control form-control-dark text-bg-dark"
-              placeholder="Search..."
-              aria-label="Search"
-            />
+           <h3 className="px-2" style={{color:'beige', fontFamily:'monospace'}}>Mstr-Ledger</h3>
           </form>
-
           <div className="text-end">
             <button
               type="button"

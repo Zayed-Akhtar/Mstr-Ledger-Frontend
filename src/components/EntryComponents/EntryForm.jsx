@@ -229,7 +229,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
 
             const response = await axios.put(
                 `${serverEndpoint}/transaction/update-transaction/${selectedTransaction._id}`,
-                payload
+                payload, {withCredentials:true}
             );
 
             const party = response.data?.items;
@@ -281,7 +281,8 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
 
         try {
             const response = await axios.delete(
-                `${serverEndpoint}/transaction/delete-transaction/${selectedTransaction._id}`
+                `${serverEndpoint}/transaction/delete-transaction/${selectedTransaction._id}`,
+                {withCredentials:true}
             );
 
             const transactions = response.data?.items?.transactions || [];

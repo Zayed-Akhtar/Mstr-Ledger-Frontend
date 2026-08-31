@@ -88,7 +88,7 @@ const AreasCard = () => {
         if (!areaToDelete?._id) return;
 
         try {
-            await axios.delete(`${serverEndpoint}/area/delete-area/${areaToDelete._id}`);
+            await axios.delete(`${serverEndpoint}/area/delete-area/${areaToDelete._id}`, {withCredentials:true});
 
             setAreas(prev => prev.filter(area => area._id !== areaToDelete._id));
             dispatch(
@@ -142,7 +142,7 @@ const AreasCard = () => {
             } else {
                 const response = await axios.put(
                     `${serverEndpoint}/area/update-area/${editingArea?._id}`,
-                    payload
+                    payload, {withCredentials:true}
                 );
 
                 const updatedArea = response.data?.items || response.data?.area || response.data;

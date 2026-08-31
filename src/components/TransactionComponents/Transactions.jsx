@@ -52,7 +52,8 @@ function Transactions({ transactions = [], onSelectTransaction, resetDate, curre
             fromDate,
             toDate
           },
-          responseType: "blob"
+          responseType: "blob",
+          withCredentials:true
         }
       );
 

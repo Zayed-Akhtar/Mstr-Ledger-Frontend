@@ -174,7 +174,8 @@ const PartiesCard = ({
 
         try {
             await axios.delete(
-                `${serverEndpoint}/party/delete-party/${partyToDelete._id}`
+                `${serverEndpoint}/party/delete-party/${partyToDelete._id}`,
+                {withCredentials:true}
             );
 
             setParties(prev =>
