@@ -7,8 +7,9 @@ import TransactionsModal from '../TransactionComponents/TransactionsModal'
 import axios from 'axios'
 import LookupField from '../common/LookupField';
 import { getTodayDate } from '../../helpers/dateHelpers';
+import DefaultSpinner from '../spinners/DefaultSpinner';
 
-function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedTransactionChange, onResetDateFilter, selectedPartyObject }) {
+function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedTransactionChange, onResetDateFilter, selectedPartyObject, onTransactionsLoadingChange }) {
     const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false)
     const [date, setDate] = useState(getTodayDate())
     const [partyNameInput, setPartyNameInput] = useState('')
@@ -79,6 +80,16 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
         return parsed.toISOString().slice(0, 10)
     }
 
+    const normalizeAreaValue = (area) => {
+        if (!area) return ''
+        if (typeof area === 'string') return area
+        if (typeof area === 'object') {
+            if (typeof area.name === 'string' && area.name.trim()) return area.name
+            if (typeof area._id === 'string' && area._id.trim()) return area._id
+        }
+        return String(area)
+    }
+
     useEffect(() => {
         if (selectedTransaction?._id) {
             setDate(formatDateValue(selectedTransaction.transactionDate))
@@ -104,7 +115,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                 setCurrentParty((prev) => ({
                     name: selectedTransaction.party.name ?? prev?.name ?? '',
                     partyCode: selectedTransaction.party.partyCode ?? prev?.partyCode ?? '',
-                    area: selectedTransaction.party.area ?? prev?.area ?? '',
+                    area: normalizeAreaValue(selectedTransaction.party.area ?? prev?.area ?? ''),
                     phoneNumber: selectedTransaction.party.phoneNumber ?? prev?.phoneNumber ?? '',
                     _id: selectedTransaction.party._id ?? prev?._id ?? ''
                 }))
@@ -301,12 +312,13 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
     };
 
     const populatePartyData = async (party, transactions = []) => {
+        onTransactionsLoadingChange?.(true);
         setPartyNameInput(party.name || '')
         setPartyCodeInput(party.partyCode || '');
         setCurrentParty({
             name: party.name,
             partyCode: party.partyCode,
-            area: party.area,
+            area: normalizeAreaValue(party.area),
             phoneNumber: party.phoneNumber,
             _id: party._id
         })
@@ -325,7 +337,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                 party: {
                     name: party.name,
                     partyCode: party.partyCode,
-                    area: party.area,
+                    area: normalizeAreaValue(party.area),
                     phoneNumber: party.phoneNumber,
                     _id: party._id
                 },
@@ -343,7 +355,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                 party: {
                     name: party.name,
                     partyCode: party.partyCode,
-                    area: party.area,
+                    area: normalizeAreaValue(party.area),
                     phoneNumber: party.phoneNumber,
                     _id: party._id
                 },
@@ -353,6 +365,8 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
             if (onPartyTransactionsLoaded) {
                 onPartyTransactionsLoaded([])
             }
+        } finally {
+            onTransactionsLoadingChange?.(false);
         }
     }
 
@@ -434,7 +448,23 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
 
     return (
         <>
-            <form className="row g-3 entry-form wht-bg" onSubmit={isUpdate ? handleUpdate : handleSave}>
+            <form className="row g-3 entry-form wht-bg" onSubmit={isUpdate ? handleUpdate : handleSave} style={{ position: 'relative' }}>
+                {isSaving && (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            inset: 0,
+                            backgroundColor: 'rgba(255,255,255,0.75)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 20,
+                            borderRadius: '0.75rem'
+                        }}
+                    >
+                        <DefaultSpinner size={60} />
+                    </div>
+                )}
                 <LookupField
                     className="col-md-6"
                     id="partyName"

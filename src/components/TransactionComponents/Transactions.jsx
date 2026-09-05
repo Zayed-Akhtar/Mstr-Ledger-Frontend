@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from 'react'
 import DateRangeFilter from '../common/DateRangeFilter';
 import { GrDocumentPdf } from "react-icons/gr";
 import axios from 'axios';
+import DefaultSpinner from '../spinners/DefaultSpinner';
 
-function Transactions({ transactions = [], onSelectTransaction, resetDate, currentParty }) {
+function Transactions({ transactions = [], onSelectTransaction, resetDate, currentParty, isLoading = false }) {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const tableHeaders = ['Txn Number', 'Date', 'Credit', 'Debit', 'Balance', 'Description'];
@@ -112,6 +113,14 @@ function Transactions({ transactions = [], onSelectTransaction, resetDate, curre
     return true;
 
   });
+
+  if (isLoading) {
+    return (
+      <div className="bd-example-snippet bd-code-snippet transaction-table wht-bg" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '420px' }}>
+        <DefaultSpinner size={64} />
+      </div>
+    )
+  }
 
   return (
     <div className="bd-example-snippet bd-code-snippet transaction-table wht-bg">

@@ -6,6 +6,7 @@ import ManagementCard from "../../common/ManagementCard";
 import PartyTableRow from "./PartyTableRow";
 import PartyModal from "./PartyModal";
 import ConfirmDeleteModal from "../../common/ConfirmDeleteModal";
+import DefaultSpinner from "../../spinners/DefaultSpinner";
 import { useDispatch } from "react-redux";
 import { showToast } from "../../../features/toast/toastSlice";
 
@@ -30,6 +31,7 @@ const PartiesCard = ({
     const [totalRecords, setTotalRecords] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [search, setSearch] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const serverEndpoint = import.meta.env.VITE_SERVER_ENDPOINT;
     const PAGE_SIZE = 5;
 
@@ -98,7 +100,7 @@ const PartiesCard = ({
     });
 
     const fetchParties = async () => {
-
+        setIsLoading(true);
         try {
 
             const response = await axios.get(
@@ -132,6 +134,8 @@ const PartiesCard = ({
                 error
             );
 
+        } finally {
+            setIsLoading(false);
         }
 
     };
@@ -285,6 +289,19 @@ const PartiesCard = ({
     return (
 
         <>
+            {isLoading && (
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    backgroundColor: 'rgba(255,255,255,0.75)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 30
+                }}>
+                    <DefaultSpinner size={64} />
+                </div>
+            )}
             <ManagementCard
 
                 title="Parties"

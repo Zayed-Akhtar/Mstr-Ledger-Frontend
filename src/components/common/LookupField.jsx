@@ -1,6 +1,7 @@
 import axios from "axios";
 import { VscSearchFuzzy } from "react-icons/vsc";
 import React, { useState, useEffect, useRef } from "react";
+import SpinnerButton from "../spinners/SpinnerButton";
 
 function LookupField({
     className = "",
@@ -314,8 +315,9 @@ function LookupField({
                         className="btn btn-outline-info"
                         onClick={handleSearchButtonClick}
                         disabled={loading || !safeValue.trim()}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '42px' }}
                     >
-                        <VscSearchFuzzy />
+                        {loading ? <SpinnerButton size={18} /> : <VscSearchFuzzy />}
                     </button>
 
                 </div>

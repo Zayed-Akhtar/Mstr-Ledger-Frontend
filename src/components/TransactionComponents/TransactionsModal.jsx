@@ -1,6 +1,7 @@
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import axios from 'axios'
+import DefaultSpinner from '../spinners/DefaultSpinner'
 
 function TransactionsModal({ visible, selectedTransaction, onClose, onSelectTransaction }) {
   if (!visible) return null
@@ -41,7 +42,6 @@ function TransactionsModal({ visible, selectedTransaction, onClose, onSelectTran
       }
     }
 
-    // debounce user input a bit
     const handle = setTimeout(fetchTransactions, 300)
     return () => {
       active = false
@@ -68,56 +68,55 @@ function TransactionsModal({ visible, selectedTransaction, onClose, onSelectTran
             />
           </div>
 
-          {loading && <div>Loading...</div>}
-          {error && <div className="text-danger">{error}</div>}
+          {loading ? (
+            <div style={{ minHeight: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <DefaultSpinner size={56} />
+            </div>
+          ) : (
+            <>
+              {error && <div className="text-danger">{error}</div>}
 
-          <table className="table table-hover table-bordered mb-0">
-            <thead>
-              <tr>
-                {tableHeaders.map(headerName => <th>{headerName}</th>)}
-                {/* <th>Party Name</th>
-                <th>Party Code</th>
-                <th>Phone</th>
-                <th>Date</th>
-                <th>Credit</th>
-                <th>Debit</th>
-                <th>Balance</th>
-                <th>Description</th> */}
-              </tr>
-            </thead>
-            <tbody>
-              {transactions.length === 0 && !loading && (
-                <tr>
-                  <td colSpan={8} className="text-center">No transactions found</td>
-                </tr>
-              )}
-              {transactions.map((tx, idx) => {
-                const party = tx.party || null
-                const partyName = party?.name || ''
-                const partyCode = party?.partyCode || ''
-                const partyPhone = party?.phoneNumber || ''
-                const isSelected = selectedTransaction && (selectedTransaction.partyCode === partyCode || selectedTransaction.code === partyCode)
-                return (
-                  <tr
-                    key={tx._id || idx}
-                    className={isSelected ? 'table-primary' : ''}
-                    style={{ cursor: party ? 'pointer' : 'default' }}
-                    onClick={() => tx && onSelectTransaction(tx)}
-                  >
-                    <td>{tx.transactionNumber}</td>
-                    <td>{partyName}</td>
-                    <td>{partyCode}</td>
-                    <td>{partyPhone}</td>
-                    <td>{new Date(tx.transactionDate || tx.createdAt || '').toLocaleDateString()}</td>
-                    <td>{tx.credit ?? '-'}</td>
-                    <td>{tx.debit ?? '-'}</td>
-                    <td>{tx.balance ?? '-'}</td>
-                    <td>{tx.description || '-'}</td>
+              <table className="table table-hover table-bordered mb-0">
+                <thead>
+                  <tr>
+                    {tableHeaders.map((headerName, index) => <th key={index}>{headerName}</th>)}
                   </tr>
-                )
-              })}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {transactions.length === 0 && !loading && (
+                    <tr>
+                      <td colSpan={9} className="text-center">No transactions found</td>
+                    </tr>
+                  )}
+                  {transactions.map((tx, idx) => {
+                    const party = tx.party || null
+                    const partyName = party?.name || ''
+                    const partyCode = party?.partyCode || ''
+                    const partyPhone = party?.phoneNumber || ''
+                    const isSelected = selectedTransaction && (selectedTransaction.partyCode === partyCode || selectedTransaction.code === partyCode)
+                    return (
+                      <tr
+                        key={tx._id || idx}
+                        className={isSelected ? 'table-primary' : ''}
+                        style={{ cursor: party ? 'pointer' : 'default' }}
+                        onClick={() => tx && onSelectTransaction(tx)}
+                      >
+                        <td>{tx.transactionNumber}</td>
+                        <td>{partyName}</td>
+                        <td>{partyCode}</td>
+                        <td>{partyPhone}</td>
+                        <td>{new Date(tx.transactionDate || tx.createdAt || '').toLocaleDateString()}</td>
+                        <td>{tx.credit ?? '-'}</td>
+                        <td>{tx.debit ?? '-'}</td>
+                        <td>{tx.balance ?? '-'}</td>
+                        <td>{tx.description || '-'}</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </>
+          )}
         </div>
         <div className="party-modal-footer">
           <button type="button" className="btn btn-secondary me-2" onClick={onClose}>Close</button>

@@ -4,6 +4,7 @@ import ManagementCard from "../common/ManagementCard";
 import AreaTableRow from "./AreaTableRow";
 import AreaModal from "./AreaModal";
 import ConfirmDeleteModal from "../common/ConfirmDeleteModal";
+import DefaultSpinner from "../spinners/DefaultSpinner";
 import { useDispatch } from "react-redux";
 import { showToast } from "../../features/toast/toastSlice";
 
@@ -18,6 +19,7 @@ const AreasCard = () => {
     const [totalRecords, setTotalRecords] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [search, setSearch] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch();
     const serverEndpoint = import.meta.env.VITE_SERVER_ENDPOINT;
     const PAGE_SIZE = 5;
@@ -31,6 +33,7 @@ const AreasCard = () => {
     ];
 
     const fetchAreas = async () => {
+        setIsLoading(true);
         try {
             const response = await axios.get(
                 `${serverEndpoint}/area/areas`,
@@ -55,6 +58,8 @@ const AreasCard = () => {
             setAreas([]);
             setTotalRecords(0);
             setTotalPages(0);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -189,6 +194,19 @@ const AreasCard = () => {
 
     return (
         <>
+            {isLoading && (
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    backgroundColor: 'rgba(255,255,255,0.75)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 30
+                }}>
+                    <DefaultSpinner size={64} />
+                </div>
+            )}
             <ManagementCard
                 title="Areas"
                 data={areas}
