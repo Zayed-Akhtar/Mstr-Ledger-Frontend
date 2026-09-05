@@ -13,7 +13,7 @@
   height: 90vh;
   overflow: scroll;
   padding-top: 5%;
-  background-color: #fafafa;
+  background-color: #f5f5f5;
 }
 
 .entry-title {
@@ -127,11 +127,10 @@
 .transaction-table {
   width: 60%;
   overflow-y: auto;
-  max-height: 640px;
+  height: 86%;
   margin-right: 2%;
   padding: 1%;
   box-shadow: 0 5px 9px rgba(0, 0, 0, 0.2);
-  height: 77%;
   position: relative;
   bottom: 2%;
 }

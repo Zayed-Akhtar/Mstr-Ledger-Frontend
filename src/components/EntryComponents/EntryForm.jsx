@@ -300,7 +300,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
         }
     };
 
-    const populatePartyData = (party, transactions = []) => {
+    const populatePartyData = async (party, transactions = []) => {
         setPartyNameInput(party.name || '')
         setPartyCodeInput(party.partyCode || '');
         setCurrentParty({
@@ -310,21 +310,49 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
             phoneNumber: party.phoneNumber,
             _id: party._id
         })
-        // Create a transaction-like object with party data
-        const partyData = {
-            party: {
-                name: party.name,
-                partyCode: party.partyCode,
-                area: party.area,
-                phoneNumber: party.phoneNumber,
-                _id: party._id
-            },
-            transactions: transactions
-        }
-        if (onSelectedTransactionChange && !isUpdate) onSelectedTransactionChange(partyData)
-        // Pass transactions to parent component
-        if (onPartyTransactionsLoaded) {
-            onPartyTransactionsLoaded(transactions)
+
+        // Fetch transactions for the selected party
+        try {
+            const response = await axios.get(
+                `${serverEndpoint}/party/party-transactions/${party._id}`,
+                { withCredentials: true }
+            );
+            const partyLedger = response.data?.items || response.data?.data || {};
+            const fetchedTransactions = partyLedger.transactions || [];
+
+            // Create a transaction-like object with party data
+            const partyData = {
+                party: {
+                    name: party.name,
+                    partyCode: party.partyCode,
+                    area: party.area,
+                    phoneNumber: party.phoneNumber,
+                    _id: party._id
+                },
+                transactions: fetchedTransactions
+            }
+            if (onSelectedTransactionChange && !isUpdate) onSelectedTransactionChange(partyData)
+            // Pass transactions to parent component
+            if (onPartyTransactionsLoaded) {
+                onPartyTransactionsLoaded(fetchedTransactions)
+            }
+        } catch (error) {
+            console.error("Error fetching party transactions:", error);
+            // Fallback: use empty transactions array if fetch fails
+            const partyData = {
+                party: {
+                    name: party.name,
+                    partyCode: party.partyCode,
+                    area: party.area,
+                    phoneNumber: party.phoneNumber,
+                    _id: party._id
+                },
+                transactions: []
+            }
+            if (onSelectedTransactionChange && !isUpdate) onSelectedTransactionChange(partyData)
+            if (onPartyTransactionsLoaded) {
+                onPartyTransactionsLoaded([])
+            }
         }
     }
 
@@ -414,7 +442,7 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                     placeholder="Party name..."
                     value={partyNameInput}
                     onChange={setPartyNameInput}
-                    searchUrl={`${serverEndpoint}/party/party-transactions`}
+                    searchUrl={`${serverEndpoint}/party/parties-by-name`}
                     showDropdown={true}
                     onPartySelected={populatePartyData}
                 />

@@ -46,7 +46,7 @@ const PartyManagementPage = () => {
 
     return (
 
-        <div className="container-fluid py-4 page-content" style={{ backgroundColor: '#fafafa' }}>
+        <div className="container-fluid py-4 page-content" style={{ backgroundColor: '#f5f5f5' }}>
 
             <div className="row h-100">
 
