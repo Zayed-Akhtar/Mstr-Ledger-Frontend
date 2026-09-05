@@ -12,7 +12,7 @@ function App() {
       <Header />
       <div style={{ display: 'flex', minHeight: '90vh' }}>
         <Sidebar />
-        <main style={{ flex: 1, padding: '1rem' }}>
+        <main style={{ flex: 1}}>
           <Outlet />
         </main>
         {/* <ToastNotification /> */}
