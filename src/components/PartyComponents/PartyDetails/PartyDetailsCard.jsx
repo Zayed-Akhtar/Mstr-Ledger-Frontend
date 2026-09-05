@@ -1,8 +1,9 @@
 import React from "react";
 import PartyInfoItem from "./PartyInfoItem";
 import PartyStatistics from "./PartyStatistics";
+import SpinnerButton from "../../spinners/SpinnerButton";
 
-const PartyDetailsCard = ({ party, onEditParty, onViewTransactions }) => {
+const PartyDetailsCard = ({ party, onEditParty, onViewTransactions, isLoadingTransactions = false }) => {
 
     if (!party) {
 
@@ -40,6 +41,20 @@ const PartyDetailsCard = ({ party, onEditParty, onViewTransactions }) => {
     return (
 
         <div className="card border-0 shadow-sm rounded-4 h-100" style={{overflowY:'auto', position:'relative'}}>
+            {isLoadingTransactions && (
+                <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    backgroundColor: 'rgba(255,255,255,0.7)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 10,
+                    borderRadius: '1rem'
+                }}>
+                    <SpinnerButton size={28} />
+                </div>
+            )}
 
         <div className="card-body d-flex flex-column p-4">
                 <div className="text-center mb-4 party-details-header">
@@ -101,8 +116,11 @@ const PartyDetailsCard = ({ party, onEditParty, onViewTransactions }) => {
                     <button
                         className="btn btn-outline-primary"
                         onClick={() => onViewTransactions?.(party)}
+                        disabled={isLoadingTransactions}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                     >
-                        View Transactions
+                        {isLoadingTransactions ? <SpinnerButton size={16} /> : null}
+                        <span>View Transactions</span>
                     </button>
 
                 </div>

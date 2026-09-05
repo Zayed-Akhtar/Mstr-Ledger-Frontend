@@ -12,11 +12,14 @@ const PartyManagementPage = () => {
         mode: "create",
         party: null
     });
+    const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
     const navigate = useNavigate();
     const serverEndpoint = import.meta.env.VITE_SERVER_ENDPOINT;
 
     const handleViewTransactions = async (party) => {
         if (!party?._id) return;
+
+        setIsLoadingTransactions(true);
 
         try {
             const response = await axios.get(
@@ -41,6 +44,8 @@ const PartyManagementPage = () => {
                     transactions: party.transactions || []
                 }
             });
+        } finally {
+            setIsLoadingTransactions(false);
         }
     };
 
@@ -67,6 +72,7 @@ const PartyManagementPage = () => {
                 <div className="col-lg-4 h-100">
                     <PartyDetailsCard
                         party={selectedParty}
+                        isLoadingTransactions={isLoadingTransactions}
                         onEditParty={(party) => setPartyModalState({
                             show: true,
                             mode: 'edit',
