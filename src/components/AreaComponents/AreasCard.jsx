@@ -8,7 +8,7 @@ import DefaultSpinner from "../spinners/DefaultSpinner";
 import { useDispatch } from "react-redux";
 import { showToast } from "../../features/toast/toastSlice";
 
-const AreasCard = () => {
+const AreasCard = ({ refreshKey = 0 }) => {
     const [showAreaModal, setShowAreaModal] = useState(false);
     const [editingArea, setEditingArea] = useState(null);
     const [modalMode, setModalMode] = useState("create");
@@ -20,6 +20,8 @@ const AreasCard = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [search, setSearch] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [isSavingArea, setIsSavingArea] = useState(false);
+    const [isDeletingArea, setIsDeletingArea] = useState(false);
     const dispatch = useDispatch();
     const serverEndpoint = import.meta.env.VITE_SERVER_ENDPOINT;
     const PAGE_SIZE = 5;
@@ -65,7 +67,7 @@ const AreasCard = () => {
 
     useEffect(() => {
         fetchAreas();
-    }, [currentPage, search, serverEndpoint]);
+    }, [currentPage, search, serverEndpoint, refreshKey]);
 
     const handleSearchChange = (value) => {
         setSearch(value);
@@ -92,6 +94,8 @@ const AreasCard = () => {
     const confirmDeleteArea = async () => {
         if (!areaToDelete?._id) return;
 
+        setIsDeletingArea(true);
+
         try {
             await axios.delete(`${serverEndpoint}/area/delete-area/${areaToDelete._id}`, {withCredentials:true});
 
@@ -115,6 +119,8 @@ const AreasCard = () => {
                     variant: "danger"
                 })
             );
+        } finally {
+            setIsDeletingArea(false);
         }
     };
 
@@ -127,6 +133,7 @@ const AreasCard = () => {
 
     const handleSaveArea = async (areaData) => {
         const payload = normalizeAreaPayload(areaData);
+        setIsSavingArea(true);
 
         try {
             if (modalMode === "create") {
@@ -173,16 +180,22 @@ const AreasCard = () => {
             fetchAreas();
         } catch (error) {
             console.error("Error saving area:", error);
+            const errorMessage = error?.response?.data?.message
+                || error?.message
+                || (modalMode === "create"
+                    ? "Failed to add area."
+                    : "Failed to update area.");
+
             dispatch(
                 showToast({
                     title: "Error",
-                    message: modalMode === "create"
-                        ? "Failed to add area."
-                        : "Failed to update area.",
+                    message: errorMessage,
                     variant: "danger"
                 })
             );
             throw error;
+        } finally {
+            setIsSavingArea(false);
         }
     };
 
@@ -238,6 +251,7 @@ const AreasCard = () => {
                 mode={modalMode}
                 area={editingArea}
                 onSave={handleSaveArea}
+                saving={isSavingArea}
             />
             <ConfirmDeleteModal
                 show={showDeleteModal}
@@ -249,6 +263,7 @@ const AreasCard = () => {
                 message="Are you sure you want to delete"
                 itemName={areaToDelete?.name}
                 onConfirm={confirmDeleteArea}
+                isDeleting={isDeletingArea}
             />
         </>
     );

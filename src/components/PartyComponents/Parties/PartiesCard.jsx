@@ -14,7 +14,8 @@ const PartiesCard = ({
     selectedParty,
     setSelectedParty,
     partyModalState,
-    setPartyModalState
+    setPartyModalState,
+    onPartyDataChange
 }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [partyToDelete, setPartyToDelete] = useState(null);
@@ -32,6 +33,8 @@ const PartiesCard = ({
     const [totalPages, setTotalPages] = useState(0);
     const [search, setSearch] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [isSavingParty, setIsSavingParty] = useState(false);
+    const [isDeletingParty, setIsDeletingParty] = useState(false);
     const serverEndpoint = import.meta.env.VITE_SERVER_ENDPOINT;
     const PAGE_SIZE = 5;
 
@@ -176,6 +179,8 @@ const PartiesCard = ({
     const confirmDelete = async () => {
         if (!partyToDelete?._id) return;
 
+        setIsDeletingParty(true);
+
         try {
             await axios.delete(
                 `${serverEndpoint}/party/delete-party/${partyToDelete._id}`,
@@ -203,6 +208,7 @@ const PartiesCard = ({
             setShowDeleteModal(false);
             setPartyToDelete(null);
             fetchParties();
+            onPartyDataChange?.();
         } catch (error) {
             console.error("Error deleting party:", error);
             dispatch(
@@ -212,11 +218,14 @@ const PartiesCard = ({
                     variant: "danger"
                 })
             );
+        } finally {
+            setIsDeletingParty(false);
         }
     };
 
     const handleSaveParty = async (partyData) => {
         const payload = normalizePartyPayload(partyData);
+        setIsSavingParty(true);
 
         try {
             if (modalState.mode === "create") {
@@ -271,18 +280,25 @@ const PartiesCard = ({
 
             closePartyModal();
             fetchParties();
+            onPartyDataChange?.();
         } catch (error) {
             console.error("Error saving party:", error);
+            const errorMessage = error?.response?.data?.message
+                || error?.message
+                || (modalState.mode === "create"
+                    ? "Failed to add party."
+                    : "Failed to update party.");
+
             dispatch(
                 showToast({
                     title: "Error",
-                    message: modalState.mode === "create"
-                        ? "Failed to add party."
-                        : "Failed to update party.",
+                    message: errorMessage,
                     variant: "danger"
                 })
             );
             throw error;
+        } finally {
+            setIsSavingParty(false);
         }
     };
 
@@ -359,6 +375,7 @@ const PartiesCard = ({
                 mode={modalState.mode}
                 party={modalState.party}
                 onSave={handleSaveParty}
+                saving={isSavingParty}
             />
             <ConfirmDeleteModal
 
@@ -379,7 +396,7 @@ const PartiesCard = ({
                 itemName={partyToDelete?.name}
 
                 onConfirm={confirmDelete}
-
+                isDeleting={isDeletingParty}
             />
         </>
 

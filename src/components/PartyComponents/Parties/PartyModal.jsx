@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import PartyForm from "./PartyForm";
+import SpinnerButton from "../../spinners/SpinnerButton";
 
 const emptyParty = {
     partyCode:"",
@@ -18,7 +19,8 @@ const PartyModal = ({
     onHide,
     mode,
     party,
-    onSave
+    onSave,
+    saving = false
 }) => {
 
     const [formData, setFormData] = useState(emptyParty);
@@ -154,6 +156,7 @@ const PartyModal = ({
                 <Button
                     variant="outline-secondary"
                     onClick={handleClose}
+                    disabled={saving}
                 >
 
                     Cancel
@@ -163,20 +166,15 @@ const PartyModal = ({
                 <Button
                     variant="primary"
                     onClick={handleSave}
+                    disabled={saving}
+                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                 >
-
-                    <i className="bi bi-check-circle me-2"></i>
-
-                    {
-
-                        mode === "create"
-
-                            ? "Save Party"
-
-                            : "Save Changes"
-
-                    }
-
+                    {saving && <SpinnerButton size={16} />}
+                    <span>
+                        {saving
+                            ? (mode === "create" ? "Saving Party..." : "Saving Changes...")
+                            : (mode === "create" ? "Save Party" : "Save Changes")}
+                    </span>
                 </Button>
 
             </Modal.Footer>

@@ -1,4 +1,5 @@
 import { Modal, Button } from "react-bootstrap";
+import SpinnerButton from "../spinners/SpinnerButton";
 
 const ConfirmDeleteModal = ({
     show,
@@ -6,7 +7,8 @@ const ConfirmDeleteModal = ({
     title,
     itemName,
     message,
-    onConfirm
+    onConfirm,
+    isDeleting = false
 }) => {
 
     return (
@@ -76,6 +78,7 @@ const ConfirmDeleteModal = ({
                 <Button
                     variant="outline-secondary"
                     onClick={onHide}
+                    disabled={isDeleting}
                 >
 
                     Cancel
@@ -85,12 +88,11 @@ const ConfirmDeleteModal = ({
                 <Button
                     variant="danger"
                     onClick={onConfirm}
+                    disabled={isDeleting}
+                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                 >
-
-                    <i className="bi bi-trash me-2"></i>
-
-                    Delete
-
+                    {isDeleting && <SpinnerButton size={16} />}
+                    <span>{isDeleting ? "Deleting..." : "Delete"}</span>
                 </Button>
 
             </Modal.Footer>

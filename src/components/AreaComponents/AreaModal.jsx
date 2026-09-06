@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import AreaForm from "./AreaForm";
+import SpinnerButton from "../spinners/SpinnerButton";
 
 
 const emptyArea = {
@@ -17,12 +18,14 @@ const AreaModal = ({
     onHide,
     mode,
     area,
-    onSave
+    onSave,
+    saving: savingProp = false
 }) => {
     const [formData, setFormData] = useState(emptyArea);
 
     const [errors, setErrors] = useState({});
-    const [saving, setSaving] = useState(false);
+    const [savingLocal, setSavingLocal] = useState(false);
+    const isSaving = savingProp || savingLocal;
 
     useEffect(() => {
 
@@ -79,7 +82,7 @@ const AreaModal = ({
 
         }
 
-        setSaving(true);
+        setSavingLocal(true);
 
         try {
             await onSave(formData);
@@ -87,7 +90,7 @@ const AreaModal = ({
         } catch (error) {
             // keep modal open if server rejected the save
         } finally {
-            setSaving(false);
+            setSavingLocal(false);
         }
 
     };
@@ -148,6 +151,8 @@ const AreaModal = ({
 
                     onClick={handleClose}
 
+                    disabled={isSaving}
+
                 >
 
                     Cancel
@@ -158,25 +163,33 @@ const AreaModal = ({
 
                     variant="primary"
 
-                    disabled={saving}
+                    disabled={isSaving}
 
                     onClick={handleSave}
 
+                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+
                 >
 
-                    {
+                    {isSaving && <SpinnerButton size={16} />}
 
-                        saving
+                    <span>
 
-                            ? "Saving..."
+                        {
 
-                            : mode === "create"
+                            isSaving
 
-                                ? "Save Area"
+                                ? "Saving..."
 
-                                : "Save Changes"
+                                : mode === "create"
 
-                    }
+                                    ? "Save Area"
+
+                                    : "Save Changes"
+
+                        }
+
+                    </span>
 
                 </Button>
 

@@ -13,8 +13,13 @@ const PartyManagementPage = () => {
         party: null
     });
     const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
+    const [areasRefreshKey, setAreasRefreshKey] = useState(0);
     const navigate = useNavigate();
     const serverEndpoint = import.meta.env.VITE_SERVER_ENDPOINT;
+
+    const handlePartyDataChange = () => {
+        setAreasRefreshKey(prev => prev + 1);
+    };
 
     const handleViewTransactions = async (party) => {
         if (!party?._id) return;
@@ -62,10 +67,11 @@ const PartyManagementPage = () => {
                             setSelectedParty={setSelectedParty}
                             partyModalState={partyModalState}
                             setPartyModalState={setPartyModalState}
+                            onPartyDataChange={handlePartyDataChange}
                         />
                     </div>
                     <div className="flex-fill" style={{height:'70%'}}>
-                        <AreasCard />
+                        <AreasCard refreshKey={areasRefreshKey} />
                     </div>
                 </div>
 
