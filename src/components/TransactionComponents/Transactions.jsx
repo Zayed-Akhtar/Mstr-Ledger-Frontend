@@ -3,6 +3,7 @@ import DateRangeFilter from '../common/DateRangeFilter';
 import { GrDocumentPdf } from "react-icons/gr";
 import axios from 'axios';
 import DefaultSpinner from '../spinners/DefaultSpinner';
+import { formatDateForDisplay } from '../../helpers/dateHelpers';
 
 function Transactions({ transactions = [], onSelectTransaction, resetDate, currentParty, isLoading = false }) {
   const [fromDate, setFromDate] = useState("");
@@ -29,12 +30,7 @@ function Transactions({ transactions = [], onSelectTransaction, resetDate, curre
     }
   }, [transactions, currentParty?._id]);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return '-'
-    const date = new Date(dateString)
-    if (Number.isNaN(date.getTime())) return '-'
-    return date.toLocaleDateString()
-  }
+  const formatDate = (dateString) => formatDateForDisplay(dateString);
 
   const handlePdfDownload = async () => {
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
+import DefaultSpinner from "./spinners/DefaultSpinner";
 
 
 const ProtectedRoute = () => {
@@ -20,7 +21,7 @@ const ProtectedRoute = () => {
 
         return (
             <div className="authentication-loading">
-                <p>Loading...</p>
+                <DefaultSpinner size={56} />
             </div>
         );
 

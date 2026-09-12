@@ -430,6 +430,20 @@
 }
 
 /* =========================================
+   AUTH LOADING STATE
+========================================= */
+
+.authentication-loading {
+  width: 48%;
+  min-height: calc(100vh - 48px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-radius: 0 18px 18px 0;
+}
+
+/* =========================================
    RESPONSIVE
 ========================================= */
 

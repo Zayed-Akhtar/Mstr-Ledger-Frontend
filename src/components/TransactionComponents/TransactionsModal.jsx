@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import axios from 'axios'
 import DefaultSpinner from '../spinners/DefaultSpinner'
+import { formatDateForDisplay } from '../../helpers/dateHelpers'
 
 function TransactionsModal({ visible, selectedTransaction, onClose, onSelectTransaction }) {
   if (!visible) return null
@@ -105,7 +106,7 @@ function TransactionsModal({ visible, selectedTransaction, onClose, onSelectTran
                         <td>{partyName}</td>
                         <td>{partyCode}</td>
                         <td>{partyPhone}</td>
-                        <td>{new Date(tx.transactionDate || tx.createdAt || '').toLocaleDateString()}</td>
+                        <td>{formatDateForDisplay(tx.transactionDate || tx.createdAt || '')}</td>
                         <td>{tx.credit ?? '-'}</td>
                         <td>{tx.debit ?? '-'}</td>
                         <td>{tx.balance ?? '-'}</td>
