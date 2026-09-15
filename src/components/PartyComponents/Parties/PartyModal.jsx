@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import PartyForm from "./PartyForm";
 import SpinnerButton from "../../spinners/SpinnerButton";
+import { useDispatch } from "react-redux";
+import { showToast } from "../../../features/toast/toastSlice";
 
 const emptyParty = {
     partyCode:"",
@@ -22,7 +24,7 @@ const PartyModal = ({
     onSave,
     saving = false
 }) => {
-
+    const dispatch = useDispatch();
     const [formData, setFormData] = useState(emptyParty);
     const [errors, setErrors] = useState({});
     useEffect(() => {
@@ -64,6 +66,26 @@ const PartyModal = ({
 
             newErrors.partyCode = "Party Code is required.";
 
+        }
+        if (formData.partyCode.includes(" ")) {
+            dispatch(
+                showToast({
+                    title: "Validation Error",
+                    message: "PartyCode should not contain space",
+                    variant: "danger"
+                })
+            );
+            return false;
+        }
+        if (formData.area.length === 0) {
+            dispatch(
+                showToast({
+                    title: "Validation Error",
+                    message: "Area is required",
+                    variant: "danger"
+                })
+            );
+            return false;
         }
         if (
             formData.phoneNumber &&

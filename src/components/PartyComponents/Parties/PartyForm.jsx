@@ -51,6 +51,33 @@ const PartyForm = ({ formData, setFormData, errors, setErrors }) => {
         <Form>
 
             <Row className="g-3">
+                <Col md={6}>
+
+                    <Form.Group>
+
+                        <Form.Label>
+
+                            Party Name <span className="text-danger">*</span>
+
+                        </Form.Label>
+
+                        <Form.Control
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            placeholder="Enter party name"
+                            isInvalid={!!errors.name}
+                        />
+
+                        <Form.Control.Feedback type="invalid">
+
+                            {errors.name}
+
+                        </Form.Control.Feedback>
+
+                    </Form.Group>
+
+                </Col>
 
                 <Col md={6}>
 
@@ -73,33 +100,6 @@ const PartyForm = ({ formData, setFormData, errors, setErrors }) => {
                         <Form.Control.Feedback type="invalid">
 
                             {errors.partyCode}
-
-                        </Form.Control.Feedback>
-
-                    </Form.Group>
-
-                </Col>
-                <Col md={6}>
-
-                    <Form.Group>
-
-                        <Form.Label>
-
-                            Party Name <span className="text-danger">*</span>
-
-                        </Form.Label>
-
-                        <Form.Control
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            placeholder="Enter party name"
-                            isInvalid={!!errors.name}
-                        />
-
-                        <Form.Control.Feedback type="invalid">
-
-                            {errors.name}
 
                         </Form.Control.Feedback>
 
