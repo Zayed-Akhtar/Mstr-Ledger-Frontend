@@ -19,7 +19,9 @@ function LookupField({
     autoSearchOnChange = false,
     searchParam = "search",
     renderResultItem,
-    searchMode = "party"
+    searchMode = "party",
+    onAddNew = null,
+    fieldType = "partyName"
 }) {
 
     const safeValue = typeof value === "string"
@@ -32,6 +34,7 @@ function LookupField({
     const [results, setResults] = useState([]);
     const [showResults, setShowResults] = useState(false);
     const [showCustomValueHint, setShowCustomValueHint] = useState(false);
+    const [hasSearched, setHasSearched] = useState(false);
     const lookupRef = useRef(null);
 
     useEffect(() => {
@@ -87,6 +90,21 @@ function LookupField({
         return () => clearTimeout(timeoutId);
     }, [safeValue, autoSearchOnChange, searchUrl, searchMode, searchParam]);
 
+    // Reset search state when the input is cleared so "No results"
+    // doesn't appear while the user is typing. The "No results"
+    // indicator appears only after an explicit search (Enter or click).
+    useEffect(() => {
+        // Clear transient search UI whenever the input value changes
+        // (including when parent code sets the value after creating a party).
+        // This ensures "No results" or error messages don't stick around
+        // after a programmatic value update.
+        setSearchError("");
+        setShowCustomValueHint(false);
+        setResults([]);
+        setShowResults(false);
+        setHasSearched(false);
+    }, [safeValue]);
+
     const handleSelect = (item) => {
         if (onSelect) {
             onSelect(item);
@@ -98,9 +116,11 @@ function LookupField({
         setResults([]);
         setSearchError("");
         setShowCustomValueHint(false);
+        setHasSearched(false);
     };
 
     const handleSearch = async () => {
+        setHasSearched(true);
         const query = safeValue.trim();
 
         if (!query) {
@@ -130,7 +150,19 @@ function LookupField({
                 response = await axios.get(`${searchUrl}/${query}`, {withCredentials:true});
             }
 
-            const payload = response.data?.items ?? response.data?.data ?? response.data;
+            // Prefer explicit `items` or `data` fields when present. If `items`
+            // is present but null, treat it as no-results instead of falling
+            // back to the whole response object (which would incorrectly
+            // be treated as a selectable result).
+            let payload;
+            if (Object.prototype.hasOwnProperty.call(response.data || {}, 'items')) {
+                payload = response.data.items;
+            } else if (Object.prototype.hasOwnProperty.call(response.data || {}, 'data')) {
+                payload = response.data.data;
+            } else {
+                payload = response.data;
+            }
+
             const items = Array.isArray(payload) ? payload : payload ? [payload] : [];
 
             if (searchMode === "query") {
@@ -322,15 +354,31 @@ function LookupField({
 
                 </div>
 
-                {searchError && (
+                {(searchError || (hasSearched && !loading && !showResults && results.length === 0 && safeValue.trim())) && (
                     <div
-                        className="text-danger"
                         style={{
                             fontSize: ".85rem",
-                            marginTop: ".25rem"
+                            marginTop: ".25rem",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            width: 'max-content'
                         }}
                     >
-                        {searchError}
+                        <div className={searchError ? "text-danger" : "text-muted"}>
+                            {searchError || "No results found"}
+                        </div>
+                        {onAddNew && safeValue.trim() && (
+                            <button
+                                type="button"
+                                className="btn btn-sm btn-primary"
+                                onClick={() => onAddNew(safeValue.trim(), fieldType)}
+                                title="Create new party"
+                                style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 8px' }}
+                            >
+                                <span style={{ fontSize: '18px' }}>Add Party</span>
+                            </button>
+                        )}
                     </div>
                 )}
 

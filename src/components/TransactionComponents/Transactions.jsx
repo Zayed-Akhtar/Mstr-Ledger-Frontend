@@ -151,7 +151,7 @@ function Transactions({ transactions = [], onSelectTransaction, resetDate, curre
       <div
         ref={tableScrollRef}
         className="bd-example m-0 border-0"
-        style={{ maxHeight: '420px', overflowY: 'auto' }}
+        style={{ height: '100%', overflowY: 'auto' }}
       >
         <table className="table table-striped table-hover mb-0">
           <thead style={{ position: 'sticky', top: 0, zIndex: 1, backgroundColor: '#fff' }}>

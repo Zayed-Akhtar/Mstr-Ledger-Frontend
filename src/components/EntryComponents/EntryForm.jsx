@@ -1,16 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useDispatch } from 'react-redux'
+import { showToast } from '../../features/toast/toastSlice'
 import { RxPencil2 } from "react-icons/rx";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { MdOutlineLibraryAddCheck } from "react-icons/md";
 import { FaRegFolderOpen } from "react-icons/fa";
 import TransactionsModal from '../TransactionComponents/TransactionsModal'
+import PartyModal from '../PartyComponents/Parties/PartyModal'
 import axios from 'axios'
 import LookupField from '../common/LookupField';
 import { getTodayDate } from '../../helpers/dateHelpers';
 import DefaultSpinner from '../spinners/DefaultSpinner';
 
 function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedTransactionChange, onResetDateFilter, selectedPartyObject, onTransactionsLoadingChange }) {
+    const dispatch = useDispatch();
     const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false)
+    const [isPartyModalOpen, setIsPartyModalOpen] = useState(false)
+    const [partyModalMode, setPartyModalMode] = useState('create')
+    const [partyModalData, setPartyModalData] = useState(null)
+    const [isSavingParty, setIsSavingParty] = useState(false)
     const [date, setDate] = useState(getTodayDate())
     const [partyNameInput, setPartyNameInput] = useState('')
     const [partyCodeInput, setPartyCodeInput] = useState('')
@@ -142,6 +150,49 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
             setBalance('')
         }
     }, [selectedTransaction])
+
+    const handleOpenPartyModal = (searchValue, fieldType) => {
+        const initialData = {
+            partyCode: "",
+            name: "",
+            email: "",
+            area: "",
+            creditLimit: "",
+            phoneNumber: "",
+            fullAddress: "",
+            active: true
+        };
+
+        if (fieldType === 'partyName') {
+            initialData.name = searchValue;
+        } else if (fieldType === 'partyCode') {
+            initialData.partyCode = searchValue;
+        }
+
+        setPartyModalData(initialData);
+        setPartyModalMode('create');
+        setIsPartyModalOpen(true);
+    };
+
+    const handleSaveParty = async (formData) => {
+        setIsSavingParty(true);
+        try {
+            const response = await axios.post(`${serverEndpoint}/party/add-party`, formData, { withCredentials: true });
+            const newParty = response.data?.items;
+            
+            if (newParty) {
+                await populatePartyData(newParty, []);
+                dispatch(showToast({ message: 'Party added successfully.', variant: 'success' }));
+                setIsPartyModalOpen(false);
+            }
+        } catch (error) {
+            console.error('Error saving party:', error);
+            dispatch(showToast({ message: error.response?.data?.message || error.message || 'Failed to add party', variant: 'danger' }));
+            throw error;
+        } finally {
+            setIsSavingParty(false);
+        }
+    };
 
     const clearCurrentEntry = () => {
         setDate(getTodayDate());
@@ -475,6 +526,8 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                     searchUrl={`${serverEndpoint}/party/parties-by-name`}
                     showDropdown={true}
                     onPartySelected={populatePartyData}
+                    onAddNew={handleOpenPartyModal}
+                    fieldType="partyName"
                 />
 
                 <LookupField
@@ -487,6 +540,8 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                     searchUrl={`${serverEndpoint}/party/party-by-code`}
                     showDropdown={false}
                     onPartySelected={populatePartyData}
+                    onAddNew={handleOpenPartyModal}
+                    fieldType="partyCode"
                 />
                 <div className="col-md-5">
                     <label htmlFor="date" className="form-label">Date</label>
@@ -621,6 +676,17 @@ function EntryForm({ onPartyTransactionsLoaded, selectedTransaction, onSelectedT
                     }
                     setIsTransactionModalOpen(false)
                 }}
+            />
+            <PartyModal
+                show={isPartyModalOpen}
+                onHide={() => {
+                    setIsPartyModalOpen(false)
+                    setPartyModalData(null)
+                }}
+                mode={partyModalMode}
+                party={partyModalData}
+                onSave={handleSaveParty}
+                saving={isSavingParty}
             />
         </>
     )
