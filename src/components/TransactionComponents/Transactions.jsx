@@ -119,7 +119,12 @@ function Transactions({ transactions = [], onSelectTransaction, resetDate, curre
   }
 
   return (
-    <div className="bd-example-snippet bd-code-snippet transaction-table wht-bg">
+    <div className="bd-example-snippet bd-code-snippet transaction-table wht-bg" style={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: 0,
+      overflow: 'hidden',
+    }}>
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -151,9 +156,9 @@ function Transactions({ transactions = [], onSelectTransaction, resetDate, curre
       <div
         ref={tableScrollRef}
         className="bd-example m-0 border-0"
-        style={{ height: '100%', overflowY: 'auto' }}
+        style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}
       >
-        <table className="table table-striped table-hover mb-0">
+        <table className="table table-striped table-hover mb-0" style={{fontSize:'small'}}>
           <thead style={{ position: 'sticky', top: 0, zIndex: 1, backgroundColor: '#fff' }}>
             <tr>
               {tableHeaders.map((header, index) => (
